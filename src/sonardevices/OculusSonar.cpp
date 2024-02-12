@@ -310,7 +310,6 @@ void OculusSonar::processSimplePingResult(OculusMessages::OculusSimplePingResult
             }
         }
 
-        uint32_t bearingTableSize = beams * sizeof(int16_t);
         lastImage->bearingTable = std::make_unique<std::vector<int16_t>>(startAddress, startAddress + 122);
 
         lastImage->imageHeight = ranges;

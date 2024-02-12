@@ -171,7 +171,7 @@ int main(int argc, char **argv){
 
     printf("OculusDriverNode: Starting Loop\n");
     while (rclcpp::ok()){
-        //rclcpp::spin_some(node);
+        rclcpp::spin_some(node);
         printf("OculusDriverNode: Firing\n");
         node->sonar_->fire();
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
