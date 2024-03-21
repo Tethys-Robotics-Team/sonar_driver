@@ -20,6 +20,8 @@
 
 #include <sonar_driver/sonardevices/Sonar.h>
 #include <sonar_driver/sonardevices/OculusSonar.h>
+#include <sonar_driver/UniformBearingCorrector.h>
+
 
 class OculusDriverNode : public rclcpp::Node
 {
@@ -55,6 +57,8 @@ protected:
     void publishTemperature(double temperature);
 
     void cb_reconfiguration(const sonar_driver_interfaces::msg::SonarConfigurationChange::SharedPtr msg);
+
+    UnoformBearingCorrector bearingCorrector;
 
     std_msgs::msg::Header commonHeader_;
     sensor_msgs::msg::Image msg_img_;
