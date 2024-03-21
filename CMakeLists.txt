@@ -17,8 +17,12 @@ find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(sonar_driver_interfaces REQUIRED)
+find_package(OpenCV REQUIRED)
+find_package(cv_bridge REQUIRED)
 
-include_directories(include)
+include_directories(
+  include
+  ${OpenCV_INCLUDE_DIRS})
 
 # ==================================================================== ezsocket
 add_library(ezsocket 
@@ -51,6 +55,11 @@ target_include_directories(sonardevices PUBLIC
 # ==================================================================== oculusDriver
 add_library(oculusDriver src/
   src/OculusDriverNode.cpp
+)
+target_link_libraries(oculusDriver
+    ${OpenCV_LIBRARIES}
+    ${cv_bridge_LIBRARIES}
+    ${rclcpp_LIBRARIES}
 )
 ament_target_dependencies(oculusDriver
   rclcpp

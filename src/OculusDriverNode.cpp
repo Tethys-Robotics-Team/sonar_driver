@@ -6,6 +6,7 @@ OculusDriverNode::OculusDriverNode(const std::string& nodeName) : rclcpp::Node(n
 
     // Initialize publishers
     pub_img = this->create_publisher<sensor_msgs::msg::Image>("image", 10);
+    pub_imgRectified = this->create_publisher<sensor_msgs::msg::Image>("image_rectified", 10);
     pub_pressure = this->create_publisher<sensor_msgs::msg::FluidPressure>("pressure", 10);
     pub_temperature = this->create_publisher<sensor_msgs::msg::Temperature>("temperature", 10);
     pub_orientation = this->create_publisher<geometry_msgs::msg::Vector3Stamped>("orientatiion", 10);
@@ -39,6 +40,28 @@ void OculusDriverNode::publishImage(std::unique_ptr<SonarImage>& image){
     //msg_img_.data = *image->data;
 
     this->pub_img->publish(*msg_imageShared);
+    
+}
+
+void OculusDriverNode::publishRectifiedImage(std::vector<uint16_t>& bearings){
+
+    msg_imgRectified.encoding = "mono8";
+    msg_imgRectified.is_bigendian = false;
+
+    // Create the message from the sonar image
+    msg_imgRectified.header = commonHeader_;
+    msg_imgRectified.height = image->imageHeight;
+    msg_imgRectified.width = image->imageWidth;
+    msg_imgRectified.step = image->imageWidth; // since data of sonar image is uint8
+
+    cv_bridge::CvImagePtr cv_img = cv_bridge::toCvCopy(msg, msg_imageShared->encoding);
+    cv_bridge::CvImagePtr cv_rectified;
+
+
+
+    bearingCorrector.getRectifiedSonar(cv_img->image, bearings, cv_rectified->image);
+
+    this->pub_imgRectified->publish(cv_rectified->toImageMsg());
     
 }
 
@@ -137,6 +160,7 @@ void OculusDriverNode::cb_reconfiguration(const sonar_driver_interfaces::msg::So
 void OculusDriverNode::cb_simplePingResult(std::unique_ptr<SonarImage>& image){
     updateCommonHeader();
     publishImage(image);
+    publishRectifiedImage(image);
     publishCurrentConfig();
 
 }

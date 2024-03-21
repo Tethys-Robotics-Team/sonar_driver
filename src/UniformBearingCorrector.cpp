@@ -1,6 +1,6 @@
 #include <UniformBearingCorrector.h>
 
-void UnoformBearingCorrector::getRectifiedSonar(const cv::Mat& img_sonar, const std::vector<int16_t>& bearings, const bool& remap, cv::Mat& img_rect){
+void UniformBearingCorrector::getRectifiedSonar(const cv::Mat& img_sonar, const std::vector<int16_t>& bearings, const bool& remap, cv::Mat& img_rect){
     cv::Mat img_polar;
     std::vector<int16_t> bearing_map(bearings);
     int fov = this->azimuth;
@@ -21,7 +21,7 @@ void UnoformBearingCorrector::getRectifiedSonar(const cv::Mat& img_sonar, const 
 
 
 
-void UnoformBearingCorrector::computeRemapMatrices(const cv::Mat& polarImg, cv::Mat& map_x, cv::Mat& map_y, const double& angleRes, 
+void UniformBearingCorrector::computeRemapMatrices(const cv::Mat& polarImg, cv::Mat& map_x, cv::Mat& map_y, const double& angleRes, 
                                                  const double& radialRes, const double& fov, const double& maxRange) {
 
     // spdlog::info("angleRes: \t{}" , angleRes);

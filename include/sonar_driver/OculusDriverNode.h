@@ -32,6 +32,7 @@ public:
 
 
     rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr pub_img;
+    rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr pub_imgRectified;
     rclcpp::Publisher<sensor_msgs::msg::FluidPressure>::SharedPtr pub_pressure;
     rclcpp::Publisher<sensor_msgs::msg::Temperature>::SharedPtr pub_temperature;
     rclcpp::Publisher<geometry_msgs::msg::Vector3Stamped>::SharedPtr pub_orientation;
@@ -49,6 +50,7 @@ protected:
     void updateCommonHeader();
 
     void publishImage(std::unique_ptr<SonarImage>& image);
+    void publishRectifiedImage(std::vector<uint16_t>& bearings);
     void publishCurrentConfig();
 
     void publishAdditionalInformation1(OculusSonarImage &image);
@@ -58,10 +60,10 @@ protected:
 
     void cb_reconfiguration(const sonar_driver_interfaces::msg::SonarConfigurationChange::SharedPtr msg);
 
-    UnoformBearingCorrector bearingCorrector;
+    UniformBearingCorrector bearingCorrector;
 
     std_msgs::msg::Header commonHeader_;
-    sensor_msgs::msg::Image msg_img_;
+    sensor_msgs::msg::Image msg_imgRectified_;
     std::shared_ptr<sensor_msgs::msg::Image> msg_imageShared = std::make_shared<sensor_msgs::msg::Image>();
     sensor_msgs::msg::Image* msg_img_raw;
 
