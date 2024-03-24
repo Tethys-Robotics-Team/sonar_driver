@@ -35,7 +35,7 @@ public:
 
     rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr pub_img;
     rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr pub_imgUniform;
-    rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr pub_imgRectified;
+    rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr pub_imgCartesian;
     rclcpp::Publisher<sensor_msgs::msg::FluidPressure>::SharedPtr pub_pressure;
     rclcpp::Publisher<sensor_msgs::msg::Temperature>::SharedPtr pub_temperature;
     rclcpp::Publisher<geometry_msgs::msg::Vector3Stamped>::SharedPtr pub_orientation;
@@ -54,7 +54,7 @@ protected:
 
     void publishImage();
     void publishUniformImage();
-    void publishRectifiedImage();
+    void publishCartesianImage();
     void publishCurrentConfig();
 
     void publishAdditionalInformation1(OculusSonarImage &image);
@@ -69,9 +69,9 @@ protected:
     std_msgs::msg::Header commonHeader_;
     sensor_msgs::msg::Image msg_image_;
     sensor_msgs::msg::Image msg_imgUniform_;
-    sensor_msgs::msg::Image msg_imgRectified_;
+    sensor_msgs::msg::Image msg_imgCartesian_;
     cv_bridge::CvImagePtr cv_imgShared_;
     cv_bridge::CvImagePtr cv_imgUniform_;
-    cv_bridge::CvImagePtr cv_imgRectified_;
+    cv_bridge::CvImagePtr cv_imgCartesian_;
 };
 

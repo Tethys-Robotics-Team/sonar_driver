@@ -7,8 +7,8 @@ OculusDriverNode::OculusDriverNode(const std::string& nodeName) : rclcpp::Node(n
     // Initialize publishers
     pub_img = this->create_publisher<sensor_msgs::msg::Image>("image", 10);
     pub_imgUniform = this->create_publisher<sensor_msgs::msg::Image>("image_uniform", 10);
-    pub_imgRectified = this->create_publisher<sensor_msgs::msg::Image>("image_rectified", 10);
-    pub_imgRectified = this->create_publisher<sensor_msgs::msg::Image>("image_rectified", 10);
+    pub_imgCartesian = this->create_publisher<sensor_msgs::msg::Image>("image_cartesian", 10);
+    pub_imgCartesian = this->create_publisher<sensor_msgs::msg::Image>("image_cartesian", 10);
     pub_pressure = this->create_publisher<sensor_msgs::msg::FluidPressure>("pressure", 10);
     pub_temperature = this->create_publisher<sensor_msgs::msg::Temperature>("temperature", 10);
     pub_orientation = this->create_publisher<geometry_msgs::msg::Vector3Stamped>("orientation", 10);
@@ -30,10 +30,10 @@ OculusDriverNode::OculusDriverNode(const std::string& nodeName) : rclcpp::Node(n
 /// @param image 
 void OculusDriverNode::cb_simplePingResult(std::unique_ptr<SonarImage>& image){
     updateCommonHeader();
-    bearingCorrector.rectifyImage(cv_imgShared_->image, cv_imgUniform_->image, sonar_->getBearingTable(), cv_imgRectified_->image);
+    bearingCorrector.rectifyImage(cv_imgShared_->image, cv_imgUniform_->image, sonar_->getBearingTable(), cv_imgCartesian_->image);
     publishImage();
     publishUniformImage();
-    publishRectifiedImage();
+    publishCartesianImage();
     publishCurrentConfig();
 
 }
@@ -48,9 +48,9 @@ void OculusDriverNode::publishImage(){
     this->pub_img->publish(*cv_imgShared_->toImageMsg());
 }
 
-void OculusDriverNode::publishRectifiedImage(){
-    cv_imgRectified_->header = commonHeader_;
-    this->pub_imgRectified->publish(*cv_imgRectified_->toImageMsg());
+void OculusDriverNode::publishCartesianImage(){
+    cv_imgCartesian_->header = commonHeader_;
+    this->pub_imgCartesian->publish(*cv_imgCartesian_->toImageMsg());
 }
 
 void OculusDriverNode::publishUniformImage(){

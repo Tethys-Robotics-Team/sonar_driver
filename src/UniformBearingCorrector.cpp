@@ -107,7 +107,7 @@ void UniformBearingCorrector::rectifyImage(const cv::Mat& img_sonar, cv::Mat& im
     
     if (true){
         cv::Mat map_x, map_y;
-        this->computeRemapMatrices(img_uniform, map_x, map_y, this->angularResolution, this->rangeResolution, fov, this->maxRange);
+        this->computeRemapMatrices(img_uniform, map_x, map_y, this->angularResolution_, this->rangeResolution_, fov, this->maxRange_);
         cv::remap(img_uniform, img_rect, map_x, map_y, cv::INTER_LINEAR);
     }
 }
@@ -115,10 +115,10 @@ void UniformBearingCorrector::rectifyImage(const cv::Mat& img_sonar, cv::Mat& im
 
 
 void UniformBearingCorrector::computeRemapMatrices(const cv::Mat& polarImg, cv::Mat& map_x, cv::Mat& map_y, const double& angleRes, 
-                                                 const double& radialRes, const double& fov, const double& maxRange) {
+                                                 const double& rangeRes, const double& fov, const double& maxRange) {
 
     // spdlog::info("angleRes: \t{}" , angleRes);
-    // spdlog::info("radialRes: \t{}" , radialRes);
+    // spdlog::info("rangeRes: \t{}" , rangeRes);
     // spdlog::info("fov: \t{}" , fov);
     // spdlog::info("fov: \t{}" , angleRes * polarImg.cols);
 
