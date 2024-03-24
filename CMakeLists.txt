@@ -45,6 +45,7 @@ add_library(sonardevices
   src/sonardevices/OculusMessages.cpp
   src/sonardevices/OculusSonarImage.cpp
   src/sonardevices/SonarImage.cpp
+  src/UniformBearingCorrector.cpp
 )
 target_link_libraries(sonardevices ezsocket)
 target_include_directories(sonardevices PUBLIC
@@ -52,31 +53,14 @@ target_include_directories(sonardevices PUBLIC
   $<INSTALL_INTERFACE:include>)
   ament_target_dependencies(sonardevices
   sensor_msgs)
-# ==================================================================== oculusDriver
-add_library(oculusDriver src/
-  src/OculusDriverNode.cpp
-)
-target_link_libraries(oculusDriver
+
+# ===================================================================== Node
+add_executable(OculusDriverNode src/OculusDriverNode.cpp)
+target_link_libraries(OculusDriverNode
     ${OpenCV_LIBRARIES}
     ${cv_bridge_LIBRARIES}
     ${rclcpp_LIBRARIES}
 )
-ament_target_dependencies(oculusDriver
-  rclcpp
-  std_msgs
-  sensor_msgs
-  geometry_msgs
-  sonar_driver_interfaces)
-target_include_directories(oculusDriver PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>)
-
-include_directories(
-  include/sonar_driver/sonardevices
-)
-
-# ===================================================================== Node
-add_executable(OculusDriverNode src/OculusDriverNode.cpp)
 target_link_libraries(OculusDriverNode ezsocket sonardevices)
 ament_target_dependencies(OculusDriverNode 
   rclcpp

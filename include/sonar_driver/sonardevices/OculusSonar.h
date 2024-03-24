@@ -7,6 +7,7 @@
 #include <memory.h>
 #include <string.h>
 
+
 #define SONAR_READ_BUFFER_SIZE 200000
 #define SONAR_WRITE_BUFFER_SIZE 200000
 
@@ -17,7 +18,7 @@ class OculusSonar : public Sonar
 {
 public:
     OculusSonar();
-    OculusSonar(std::shared_ptr<sensor_msgs::msg::Image> messagePointer);
+    OculusSonar(cv::Mat* sharedImgPtr);
     ~OculusSonar();
 
     void findAndConnect() override;

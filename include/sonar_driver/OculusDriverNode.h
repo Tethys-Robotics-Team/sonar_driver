@@ -18,10 +18,12 @@
 #include <sonar_driver_interfaces/msg/sonar_bearings.hpp>   
 
 
+#include <cv_bridge/cv_bridge.h>
+#include <opencv2/opencv.hpp>
+
 #include <sonar_driver/sonardevices/Sonar.h>
 #include <sonar_driver/sonardevices/OculusSonar.h>
 #include <sonar_driver/UniformBearingCorrector.h>
-
 
 class OculusDriverNode : public rclcpp::Node
 {
@@ -32,6 +34,7 @@ public:
 
 
     rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr pub_img;
+    rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr pub_imgUniform;
     rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr pub_imgRectified;
     rclcpp::Publisher<sensor_msgs::msg::FluidPressure>::SharedPtr pub_pressure;
     rclcpp::Publisher<sensor_msgs::msg::Temperature>::SharedPtr pub_temperature;
@@ -49,8 +52,9 @@ protected:
 
     void updateCommonHeader();
 
-    void publishImage(std::unique_ptr<SonarImage>& image);
-    void publishRectifiedImage(std::vector<uint16_t>& bearings);
+    void publishImage();
+    void publishUniformImage();
+    void publishRectifiedImage();
     void publishCurrentConfig();
 
     void publishAdditionalInformation1(OculusSonarImage &image);
@@ -63,10 +67,11 @@ protected:
     UniformBearingCorrector bearingCorrector;
 
     std_msgs::msg::Header commonHeader_;
+    sensor_msgs::msg::Image msg_image_;
+    sensor_msgs::msg::Image msg_imgUniform_;
     sensor_msgs::msg::Image msg_imgRectified_;
-    std::shared_ptr<sensor_msgs::msg::Image> msg_imageShared = std::make_shared<sensor_msgs::msg::Image>();
-    sensor_msgs::msg::Image* msg_img_raw;
-
-
+    cv_bridge::CvImagePtr cv_imgShared_;
+    cv_bridge::CvImagePtr cv_imgUniform_;
+    cv_bridge::CvImagePtr cv_imgRectified_;
 };
 

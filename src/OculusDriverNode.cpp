@@ -6,17 +6,16 @@ OculusDriverNode::OculusDriverNode(const std::string& nodeName) : rclcpp::Node(n
 
     // Initialize publishers
     pub_img = this->create_publisher<sensor_msgs::msg::Image>("image", 10);
+    pub_imgUniform = this->create_publisher<sensor_msgs::msg::Image>("image_uniform", 10);
+    pub_imgRectified = this->create_publisher<sensor_msgs::msg::Image>("image_rectified", 10);
     pub_imgRectified = this->create_publisher<sensor_msgs::msg::Image>("image_rectified", 10);
     pub_pressure = this->create_publisher<sensor_msgs::msg::FluidPressure>("pressure", 10);
     pub_temperature = this->create_publisher<sensor_msgs::msg::Temperature>("temperature", 10);
-    pub_orientation = this->create_publisher<geometry_msgs::msg::Vector3Stamped>("orientatiion", 10);
+    pub_orientation = this->create_publisher<geometry_msgs::msg::Vector3Stamped>("orientation", 10);
     pub_configuration = this->create_publisher<sonar_driver_interfaces::msg::SonarConfiguration>("configuration", 10);
     pub_bearings = this->create_publisher<sonar_driver_interfaces::msg::SonarBearings>("bearings", 10);
 
-    msg_img_raw = new sensor_msgs::msg::Image();
-
-
-    sonar_ = std::make_unique<OculusSonar>(msg_imageShared);
+    sonar_ = std::make_unique<OculusSonar>(&cv_imgShared_->image);
 
     updateCommonHeader();
 
@@ -26,43 +25,37 @@ OculusDriverNode::OculusDriverNode(const std::string& nodeName) : rclcpp::Node(n
 
 }
 
+/// @brief Method to execute upon receival of a simplePingResult in the sonar_ class 
+/// @param sonar 
+/// @param image 
+void OculusDriverNode::cb_simplePingResult(std::unique_ptr<SonarImage>& image){
+    updateCommonHeader();
+    bearingCorrector.rectifyImage(cv_imgShared_->image, cv_imgUniform_->image, sonar_->getBearingTable(), cv_imgRectified_->image);
+    publishImage();
+    publishUniformImage();
+    publishRectifiedImage();
+    publishCurrentConfig();
 
-void OculusDriverNode::publishImage(std::unique_ptr<SonarImage>& image){
-    msg_imageShared->encoding = "mono8";
-    msg_imageShared->is_bigendian = false;
-
-    // Create the message from the sonar image
-    msg_imageShared->header = commonHeader_;
-    msg_imageShared->height = image->imageHeight;
-    msg_imageShared->width = image->imageWidth;
-    msg_imageShared->step = image->imageWidth; // since data of sonar image is uint8
-
-    //msg_img_.data = *image->data;
-
-    this->pub_img->publish(*msg_imageShared);
-    
 }
 
-void OculusDriverNode::publishRectifiedImage(std::vector<uint16_t>& bearings){
+void OculusDriverNode::updateCommonHeader(){
+    commonHeader_.frame_id = "sonar_0";
+    commonHeader_.stamp = this->get_clock()->now();
+}
 
-    msg_imgRectified.encoding = "mono8";
-    msg_imgRectified.is_bigendian = false;
+void OculusDriverNode::publishImage(){
+    cv_imgShared_->header = commonHeader_;
+    this->pub_img->publish(*cv_imgShared_->toImageMsg());
+}
 
-    // Create the message from the sonar image
-    msg_imgRectified.header = commonHeader_;
-    msg_imgRectified.height = image->imageHeight;
-    msg_imgRectified.width = image->imageWidth;
-    msg_imgRectified.step = image->imageWidth; // since data of sonar image is uint8
+void OculusDriverNode::publishRectifiedImage(){
+    cv_imgRectified_->header = commonHeader_;
+    this->pub_imgRectified->publish(*cv_imgRectified_->toImageMsg());
+}
 
-    cv_bridge::CvImagePtr cv_img = cv_bridge::toCvCopy(msg, msg_imageShared->encoding);
-    cv_bridge::CvImagePtr cv_rectified;
-
-
-
-    bearingCorrector.getRectifiedSonar(cv_img->image, bearings, cv_rectified->image);
-
-    this->pub_imgRectified->publish(cv_rectified->toImageMsg());
-    
+void OculusDriverNode::publishUniformImage(){
+    cv_imgUniform_->header = commonHeader_;
+    this->pub_imgUniform->publish(*cv_imgUniform_->toImageMsg());
 }
 
 void OculusDriverNode::publishAdditionalInformation1(OculusSonarImage &image){
@@ -154,22 +147,6 @@ void OculusDriverNode::cb_reconfiguration(const sonar_driver_interfaces::msg::So
     sonar_->setPingRate(msg->ping_rate);
 }
 
-/// @brief Method to execute upon receival of a simplePingResult Message 
-/// @param sonar 
-/// @param image 
-void OculusDriverNode::cb_simplePingResult(std::unique_ptr<SonarImage>& image){
-    updateCommonHeader();
-    publishImage(image);
-    publishRectifiedImage(image);
-    publishCurrentConfig();
-
-}
-
-
-void OculusDriverNode::updateCommonHeader(){
-    commonHeader_.frame_id = "sonar_0";
-    commonHeader_.stamp = this->get_clock()->now();
-}
 
 int main(int argc, char **argv){
     rclcpp::init(argc, argv);

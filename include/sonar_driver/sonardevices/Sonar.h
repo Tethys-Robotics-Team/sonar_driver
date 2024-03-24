@@ -11,6 +11,7 @@
 
 #include <sonar_driver/sonardevices/SonarImage.h>
 
+#include <opencv2/opencv.hpp>
 #include "sensor_msgs/msg/image.hpp"
 
 enum SonarState
@@ -29,7 +30,7 @@ class Sonar
 {
 public:
     Sonar();
-    Sonar(std::shared_ptr<sensor_msgs::msg::Image> messagePointer);
+    Sonar(cv::Mat* messagePointer);
     virtual ~Sonar() = 0;
 
     // Find sonar via UDP broadcast signal and connect to any sonar (blocking)
@@ -128,6 +129,7 @@ public:
 
     virtual std::string getDeviceName() = 0;
 
+    std::unique_ptr<SonarImage>& getLastImage() {return lastImage;}
 
 protected:
     SonarState state;
@@ -135,7 +137,7 @@ protected:
     std::thread callbackThread;
     std::mutex callbackMutex;
     
-    std::shared_ptr<sensor_msgs::msg::Image> rosImageMessagePointer;
+    cv::Mat* sharedImagePtr_;
     std::unique_ptr<SonarImage> lastImage = std::make_unique<SonarImage>();
 
     bool callbackThreadStarted;

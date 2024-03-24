@@ -12,8 +12,8 @@ public:
         std::unique_ptr<std::vector<int16_t>> bearingTable = std::make_unique<std::vector<int16_t>>(200000);
     };
 
-    uint16_t imageWidth = 0;
-    uint16_t imageHeight = 0;
+    uint16_t width = 0;
+    uint16_t height = 0;
     std::unique_ptr<std::vector<uint8_t>> data;
     std::unique_ptr<std::vector<int16_t>> bearingTable;
 };

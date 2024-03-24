@@ -14,7 +14,7 @@ OculusSonar::OculusSonar() : Sonar(){
     rangeResolution = 0.0;
 }
 
-OculusSonar::OculusSonar(std::shared_ptr<sensor_msgs::msg::Image> messagePointer) : Sonar(messagePointer){
+OculusSonar::OculusSonar(cv::Mat* sharedImagePtr) : Sonar(sharedImagePtr){
     sonarTCPSocket = std::make_shared<EZSocket::TCPSocket>();
     sonarUDPSocket = std::make_shared<EZSocket::UDPSocket>();
     sonarAddress = "empty";
@@ -289,6 +289,7 @@ void OculusSonar::processSimplePingResult(OculusMessages::OculusSimplePingResult
             rangeResolution = ospr->rangeResolution;
             break;
     }
+
     // Remember the beams and range bin count
     this->beams = beams;
     this->rangeBinCount = ranges;
@@ -312,10 +313,11 @@ void OculusSonar::processSimplePingResult(OculusMessages::OculusSimplePingResult
 
         lastImage->bearingTable = std::make_unique<std::vector<int16_t>>(startAddress, startAddress + 122);
 
-        lastImage->imageHeight = ranges;
-        lastImage->imageWidth  = beams;
+        lastImage->height = ranges;
+        lastImage->width  = beams;
         //lastImage->data = std::make_unique<std::vector<uint8_t>>(startAddress + imageOffset, startAddress + imageOffset + imageSize);
-        rosImageMessagePointer->data = std::vector<uint8_t>(startAddress + imageOffset, startAddress + imageOffset + imageSize);
+        // sharedImagePtr->data = std::vector<uint8_t>(startAddress + imageOffset, startAddress + imageOffset + imageSize);
+        std::copy(startAddress + imageOffset, startAddress + imageOffset + imageSize, sharedImagePtr_->data);
 
         // New image ready, notify all callbacks
         SonarCallback cb;
@@ -333,7 +335,7 @@ void OculusSonar::processSimplePingResult(OculusMessages::OculusSimplePingResult
 
 
 std::vector<int16_t> OculusSonar::getBearingTable(){
-    int n = lastImage->imageWidth;
+    int n = lastImage->width;
     std::vector<int16_t> bearingVector(n);  // preallocate space for the bearings
     std::transform(lastImage->bearingTable->begin(), lastImage->bearingTable->end(), bearingVector.begin(), [](int16_t bearing) {
         return bearing;
