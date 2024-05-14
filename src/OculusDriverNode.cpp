@@ -26,11 +26,13 @@ OculusDriverNode::OculusDriverNode(const std::string& nodeName) : rclcpp::Node(n
 }
 
 /// @brief Method to execute upon receival of a simplePingResult in the sonar_ class 
-/// @param sonar 
 /// @param image 
 void OculusDriverNode::cb_simplePingResult(std::unique_ptr<SonarImage>& image){
     updateCommonHeader();
+
+    UniformBearingCorrector bearingCorrector(sonar_->getAngularResolution(), sonar_->getRangeResolution(), sonar_->getMinimumRange(), sonar_->getMaximumRange());
     bearingCorrector.rectifyImage(cv_imgShared_->image, cv_imgUniform_->image, sonar_->getBearingTable(), cv_imgCartesian_->image);
+    
     publishImage();
     publishUniformImage();
     publishCartesianImage();
