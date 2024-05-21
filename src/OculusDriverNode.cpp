@@ -8,14 +8,14 @@ OculusDriverNode::OculusDriverNode(const std::string& nodeName) : rclcpp::Node(n
     pub_img = this->create_publisher<sensor_msgs::msg::Image>("image", 10);
     pub_imgUniform = this->create_publisher<sensor_msgs::msg::Image>("image_uniform", 10);
     pub_imgCartesian = this->create_publisher<sensor_msgs::msg::Image>("image_cartesian", 10);
-    pub_imgCartesian = this->create_publisher<sensor_msgs::msg::Image>("image_cartesian", 10);
     pub_pressure = this->create_publisher<sensor_msgs::msg::FluidPressure>("pressure", 10);
     pub_temperature = this->create_publisher<sensor_msgs::msg::Temperature>("temperature", 10);
     pub_orientation = this->create_publisher<geometry_msgs::msg::Vector3Stamped>("orientation", 10);
     pub_configuration = this->create_publisher<sonar_driver_interfaces::msg::SonarConfiguration>("configuration", 10);
     pub_bearings = this->create_publisher<sonar_driver_interfaces::msg::SonarBearings>("bearings", 10);
-
-    sonar_ = std::make_unique<OculusSonar>(&cv_imgShared_->image);
+    
+    // cv_imgShared_ = cv_bridge::CvImage(std_msgs::msg::Header(), sensor_msgs::image_encodings::MONO8, cv::Mat(512, 512, CV_8U));
+    sonar_ = std::make_unique<OculusSonar>(&cv_imgShared_);
 
     updateCommonHeader();
 
@@ -29,13 +29,19 @@ OculusDriverNode::OculusDriverNode(const std::string& nodeName) : rclcpp::Node(n
 /// @param image 
 void OculusDriverNode::cb_simplePingResult(std::unique_ptr<SonarImage>& image){
     updateCommonHeader();
-
-    UniformBearingCorrector bearingCorrector(sonar_->getAngularResolution(), sonar_->getRangeResolution(), sonar_->getMinimumRange(), sonar_->getMaximumRange());
-    bearingCorrector.rectifyImage(cv_imgShared_->image, cv_imgUniform_->image, sonar_->getBearingTable(), cv_imgCartesian_->image);
+    printf("OculusDriverNode: Correcting image\n");
+    double angularResolution = sonar_->getHorzFOV() / sonar_->getBeamCount();
+    UniformBearingCorrector bearingCorrector(angularResolution, sonar_->getRangeResolution(), sonar_->getMinimumRange(), sonar_->getMaximumRange());
+    bearingCorrector.rectifyImage(cv_imgShared_, cv_imgUniform_, sonar_->getBearingTable(), cv_imgCartesian_);
+    
+    printf("OculusDriverNode: Corrected image\n");
     
     publishImage();
+    printf("OculusDriverNode: Published image\n");
     publishUniformImage();
+    printf("OculusDriverNode: Published Uniform\n");
     publishCartesianImage();
+    printf("OculusDriverNode: Published Cartesian\n");
     publishCurrentConfig();
 
 }
@@ -46,18 +52,18 @@ void OculusDriverNode::updateCommonHeader(){
 }
 
 void OculusDriverNode::publishImage(){
-    cv_imgShared_->header = commonHeader_;
-    this->pub_img->publish(*cv_imgShared_->toImageMsg());
+    cv_bridge::CvImage bridge(commonHeader_, sensor_msgs::image_encodings::MONO8, std::move(cv_imgShared_));
+    this->pub_img->publish(*bridge.toImageMsg());
 }
 
 void OculusDriverNode::publishCartesianImage(){
-    cv_imgCartesian_->header = commonHeader_;
-    this->pub_imgCartesian->publish(*cv_imgCartesian_->toImageMsg());
+    cv_bridge::CvImage bridge(commonHeader_, sensor_msgs::image_encodings::MONO8, std::move(cv_imgCartesian_));
+    this->pub_imgCartesian->publish(*bridge.toImageMsg());
 }
 
 void OculusDriverNode::publishUniformImage(){
-    cv_imgUniform_->header = commonHeader_;
-    this->pub_imgUniform->publish(*cv_imgUniform_->toImageMsg());
+    cv_bridge::CvImage bridge(commonHeader_, sensor_msgs::image_encodings::MONO8, std::move(cv_imgUniform_));
+    this->pub_imgUniform->publish(*bridge.toImageMsg());
 }
 
 void OculusDriverNode::publishAdditionalInformation1(OculusSonarImage &image){

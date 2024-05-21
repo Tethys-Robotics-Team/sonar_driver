@@ -50,7 +50,7 @@ cv::Mat UniformBearingCorrector::interp(const std::vector<int16_t>& xp, const cv
 
 			}
 			i +=1;
-			if (i >= N_x) {printf("break\n"); break;}
+			if (i >= N_x) {break;}
 		}
 
     	ip +=1;
@@ -98,8 +98,10 @@ cv::Mat UniformBearingCorrector::applyAlongAxis(const cv::Mat& inputMatrix, cons
 }
 
 void UniformBearingCorrector::rectifyImage(const cv::Mat& img_sonar, cv::Mat& img_uniform, const std::vector<int16_t>& bearings, cv::Mat& img_rect){
+    
     std::vector<int16_t> bearingMap(bearings);
-    int fov = (bearings.back() - bearings.front()) * 100 / 2; 
+    double fov = (bearings.back() - bearings.front()) / 100.0; 
+    spdlog::info("FOV: {}, bearing back {}, bearing front {}", fov, bearings.back(), bearings.front());
     std::for_each(bearingMap.begin(), bearingMap.end(), [fov](int16_t& number) {number += fov*100/2;});    
     
     std::vector<double> linearMap = linspace(1, fov, img_sonar.cols);
@@ -117,10 +119,10 @@ void UniformBearingCorrector::rectifyImage(const cv::Mat& img_sonar, cv::Mat& im
 void UniformBearingCorrector::computeRemapMatrices(const cv::Mat& polarImg, cv::Mat& map_x, cv::Mat& map_y, const double& angleRes, 
                                                  const double& rangeRes, const double& fov, const double& maxRange) {
 
-    // spdlog::info("angleRes: \t{}" , angleRes);
-    // spdlog::info("rangeRes: \t{}" , rangeRes);
-    // spdlog::info("fov: \t{}" , fov);
-    // spdlog::info("fov: \t{}" , angleRes * polarImg.cols);
+    spdlog::info("angleRes: \t{}" , angleRes);
+    spdlog::info("rangeRes: \t{}" , rangeRes);
+    spdlog::info("fov: \t{}" , fov);
+    spdlog::info("fov: \t{}" , angleRes * polarImg.cols);
 
     int cartesianWidthPx = 2 * static_cast<int>(polarImg.rows * std::sin((fov * CV_PI / 180.0) / 2));
     int halfSize = cartesianWidthPx / 2;

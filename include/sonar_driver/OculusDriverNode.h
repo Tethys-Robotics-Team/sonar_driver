@@ -9,6 +9,7 @@
 
 #include "std_msgs/msg/header.hpp"
 #include "sensor_msgs/msg/image.hpp"
+#include <sensor_msgs/image_encodings.hpp>
 #include "sensor_msgs/msg/fluid_pressure.hpp"
 #include "sensor_msgs/msg/temperature.hpp"
 #include "geometry_msgs/msg/vector3_stamped.hpp"
@@ -70,8 +71,8 @@ protected:
     sensor_msgs::msg::Image msg_image_;
     sensor_msgs::msg::Image msg_imgUniform_;
     sensor_msgs::msg::Image msg_imgCartesian_;
-    cv_bridge::CvImagePtr cv_imgShared_;
-    cv_bridge::CvImagePtr cv_imgUniform_;
-    cv_bridge::CvImagePtr cv_imgCartesian_;
+    cv::Mat cv_imgShared_ = cv::Mat(512, 512, CV_8U);
+    cv::Mat cv_imgUniform_ = cv::Mat(512, 512, CV_8U);
+    cv::Mat cv_imgCartesian_ = cv::Mat(512, 512, CV_8U);
 };
 

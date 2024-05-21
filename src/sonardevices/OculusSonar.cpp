@@ -236,6 +236,7 @@ void OculusSonar::invokeCallbacks(){
         // Check which message type was received
         switch (omh->msgId){
             case OculusMessages::OculusMessageType::messageSimplePingResult:
+                printf("OculusSonar: Received simple ping result message\n");
                 processSimplePingResult((OculusMessages::OculusSimplePingResult *)omh);
                 break;
             case OculusMessages::OculusMessageType::messageUserConfig:
@@ -311,13 +312,19 @@ void OculusSonar::processSimplePingResult(OculusMessages::OculusSimplePingResult
             }
         }
 
-        lastImage->bearingTable = std::make_unique<std::vector<int16_t>>(startAddress, startAddress + 122);
+        auto pingSize = sizeof(OculusMessages::OculusSimplePingResult);
+        auto bearingsSize = beams * sizeof(int16_t);
+        lastImage->bearingTable = std::make_unique<std::vector<int16_t>>(reinterpret_cast<int16_t*>(startAddress + pingSize), 
+                                                                         reinterpret_cast<int16_t*>(startAddress + pingSize + bearingsSize));
 
         lastImage->height = ranges;
         lastImage->width  = beams;
-        //lastImage->data = std::make_unique<std::vector<uint8_t>>(startAddress + imageOffset, startAddress + imageOffset + imageSize);
-        // sharedImagePtr->data = std::vector<uint8_t>(startAddress + imageOffset, startAddress + imageOffset + imageSize);
-        std::copy(startAddress + imageOffset, startAddress + imageOffset + imageSize, sharedImagePtr_->data);
+
+        printf("OculusSonar: Copy image\n");
+        *sharedImagePtr_ = cv::Mat(ranges, beams, CV_8U);
+        std::memcpy(sharedImagePtr_->data, startAddress + imageOffset, imageSize);
+        
+        printf("OculusSonar: Copied image\n");
 
         // New image ready, notify all callbacks
         SonarCallback cb;
@@ -333,7 +340,7 @@ void OculusSonar::processSimplePingResult(OculusMessages::OculusSimplePingResult
     }
 }
 
-
+// TODO get as reference
 std::vector<int16_t> OculusSonar::getBearingTable(){
     int n = lastImage->width;
     std::vector<int16_t> bearingVector(n);  // preallocate space for the bearings
