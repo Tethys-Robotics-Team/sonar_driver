@@ -27,8 +27,8 @@ Sonar::Sonar(){
     state = SonarState::Ready;
 }
 
-Sonar::Sonar(cv::Mat* sharedImagePtr) : Sonar(){
-    sharedImagePtr_ = sharedImagePtr;
+Sonar::Sonar(std::shared_ptr<cv_bridge::CvImage> cvBridgeShared) : Sonar(){
+    cvBridgeShared_ = cvBridgeShared;
 }
 
 

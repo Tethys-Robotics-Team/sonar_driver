@@ -18,7 +18,7 @@ class OculusSonar : public Sonar
 {
 public:
     OculusSonar();
-    OculusSonar(cv::Mat* sharedImgPtr);
+    OculusSonar(std::shared_ptr<cv_bridge::CvImage> cvBridgeShared_);
     ~OculusSonar();
 
     void findAndConnect() override;

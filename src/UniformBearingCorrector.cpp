@@ -1,8 +1,7 @@
 
 #include <sonar_driver/UniformBearingCorrector.h>
 
-std::vector<double> UniformBearingCorrector::linspace(const int& start_in, const int& end_in, const int& num_in)
-{
+std::vector<double> UniformBearingCorrector::linspace(const int& start_in, const int& end_in, const int& num_in){
     std::vector<double> linspaced;
     double start = static_cast<double>(start_in);
     double end = static_cast<double>(end_in);
@@ -108,37 +107,35 @@ void UniformBearingCorrector::rectifyImage(const cv::Mat& img_sonar, cv::Mat& im
     img_uniform = applyAlongAxis(img_sonar, 0, linearMap, bearingMap);
     
     if (true){
-        cv::Mat map_x, map_y;
-        this->computeRemapMatrices(img_uniform, map_x, map_y, this->angularResolution_, this->rangeResolution_, fov, this->maxRange_);
-        cv::remap(img_uniform, img_rect, map_x, map_y, cv::INTER_LINEAR);
+        this->computeRemapMatrices(img_uniform, mapX_, mapY_, this->angularResolution_, this->config.rangeResolutionolution_, fov, this->maxRange_);
+        cv::remap(img_uniform, img_rect, mapX, mapY, cv::INTER_LINEAR);
     }
 }
 
 
 
-void UniformBearingCorrector::computeRemapMatrices(const cv::Mat& polarImg, cv::Mat& map_x, cv::Mat& map_y, const double& angleRes, 
-                                                 const double& rangeRes, const double& fov, const double& maxRange) {
+void UniformBearingCorrector::computeRemapMatrices(UniformBearingCorrectorConfig config, cv::Mat& mapX, cv::Mat& mapY) {
 
-    spdlog::info("angleRes: \t{}" , angleRes);
-    spdlog::info("rangeRes: \t{}" , rangeRes);
+    double fov = config.angularResolution * config.cols;
+    spdlog::info("angularResolution: \t{}" , config.angularResolution);
+    spdlog::info("rangeResolution: \t{}" , config.rangeResolution);
     spdlog::info("fov: \t{}" , fov);
-    spdlog::info("fov: \t{}" , angleRes * polarImg.cols);
 
-    int cartesianWidthPx = 2 * static_cast<int>(polarImg.rows * std::sin((fov * CV_PI / 180.0) / 2));
+    int cartesianWidthPx = 2 * static_cast<int>(config.rows * std::sin((fov * CV_PI / 180.0) / 2));
     int halfSize = cartesianWidthPx / 2;
-    map_x.create(polarImg.rows, cartesianWidthPx, CV_32FC1);
-    map_y.create(polarImg.rows, cartesianWidthPx, CV_32FC1);
+    mapX.create(config.rows, cartesianWidthPx, CV_32FC1);
+    mapY.create(config.rows, cartesianWidthPx, CV_32FC1);
 
     for (int cv_x = 0; cv_x < cartesianWidthPx; cv_x++) {
-        for (int cv_y = 0; cv_y < polarImg.rows; cv_y++) {
+        for (int cv_y = 0; cv_y < config.rows; cv_y++) {
             double dx = cv_y;
             double dy = cv_x - halfSize;  // Pixel 0 is left to the angle 0, so it is -halfSize
 
             double r = std::sqrt(dx*dx + dy*dy);  // radius in [Px]
-            double theta = (std::atan2(dy, dx) * 57.27 / angleRes) + (polarImg.cols/2);       // angle in [Px]
+            double theta = (std::atan2(dy, dx) * 57.27 / config.angularResolution) + (config.cols/2);       // angle in [Px]
 
-            map_x.at<float>(cv_y, cv_x) = theta;
-            map_y.at<float>(cv_y, cv_x) = r;
+            mapX.at<float>(cv_y, cv_x) = theta;
+            mapY.at<float>(cv_y, cv_x) = r;
 
             // if(cv_x == halfSize && cv_y == 256) spdlog::info("At cv: Y{} X{}, Cartesian: X{}, Y{}, Polar: R{}, T{}", cv_y, cv_x, dx, dy, r, theta);
         }

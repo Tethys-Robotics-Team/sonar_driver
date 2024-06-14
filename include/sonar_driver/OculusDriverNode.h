@@ -71,6 +71,11 @@ protected:
     sensor_msgs::msg::Image msg_image_;
     sensor_msgs::msg::Image msg_imgUniform_;
     sensor_msgs::msg::Image msg_imgCartesian_;
+    
+    std::shared_ptr<cv_bridge::CvImage> cvBridgeShared_ = std::make_shared<cv_bridge::CvImage>();
+    std::shared_ptr<cv_bridge::CvImage> cvBridgeUniform_ = std::make_shared<cv_bridge::CvImage>();
+    std::shared_ptr<cv_bridge::CvImage> cvBridgeCartesian_ = std::make_shared<cv_bridge::CvImage>();
+
     cv::Mat cv_imgShared_ = cv::Mat(512, 512, CV_8U);
     cv::Mat cv_imgUniform_ = cv::Mat(512, 512, CV_8U);
     cv::Mat cv_imgCartesian_ = cv::Mat(512, 512, CV_8U);

@@ -15,7 +15,7 @@ OculusDriverNode::OculusDriverNode(const std::string& nodeName) : rclcpp::Node(n
     pub_bearings = this->create_publisher<sonar_driver_interfaces::msg::SonarBearings>("bearings", 10);
     
     // cv_imgShared_ = cv_bridge::CvImage(std_msgs::msg::Header(), sensor_msgs::image_encodings::MONO8, cv::Mat(512, 512, CV_8U));
-    sonar_ = std::make_unique<OculusSonar>(&cv_imgShared_);
+    sonar_ = std::make_unique<OculusSonar>(cvBridgeShared_);
 
     updateCommonHeader();
 
@@ -32,7 +32,7 @@ void OculusDriverNode::cb_simplePingResult(std::unique_ptr<SonarImage>& image){
     printf("OculusDriverNode: Correcting image\n");
     double angularResolution = sonar_->getHorzFOV() / sonar_->getBeamCount();
     UniformBearingCorrector bearingCorrector(angularResolution, sonar_->getRangeResolution(), sonar_->getMinimumRange(), sonar_->getMaximumRange());
-    bearingCorrector.rectifyImage(cv_imgShared_, cv_imgUniform_, sonar_->getBearingTable(), cv_imgCartesian_);
+    bearingCorrector.rectifyImage(cvBridgeShared_->image, cvBridgeUniform_->image, sonar_->getBearingTable(), cvBridgeUniform_->image);
     
     printf("OculusDriverNode: Corrected image\n");
     

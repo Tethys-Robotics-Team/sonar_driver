@@ -11,6 +11,7 @@
 
 #include <sonar_driver/sonardevices/SonarImage.h>
 
+#include <cv_bridge/cv_bridge.h>
 #include <opencv2/opencv.hpp>
 #include "sensor_msgs/msg/image.hpp"
 
@@ -30,7 +31,7 @@ class Sonar
 {
 public:
     Sonar();
-    Sonar(cv::Mat* messagePointer);
+    Sonar(std::shared_ptr<cv_bridge::CvImage> cvBridgeShared);
     virtual ~Sonar() = 0;
 
     // Find sonar via UDP broadcast signal and connect to any sonar (blocking)
@@ -138,6 +139,8 @@ protected:
     std::mutex callbackMutex;
     
     cv::Mat* sharedImagePtr_;
+    std::shared_ptr<cv_bridge::CvImage> cvBridgeShared_;
+    
     std::unique_ptr<SonarImage> lastImage = std::make_unique<SonarImage>();
 
     bool callbackThreadStarted;

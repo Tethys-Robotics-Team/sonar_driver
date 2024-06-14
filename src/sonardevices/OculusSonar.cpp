@@ -14,7 +14,7 @@ OculusSonar::OculusSonar() : Sonar(){
     rangeResolution = 0.0;
 }
 
-OculusSonar::OculusSonar(cv::Mat* sharedImagePtr) : Sonar(sharedImagePtr){
+OculusSonar::OculusSonar(std::shared_ptr<cv_bridge::CvImage> cvBridgeShared) : Sonar(cvBridgeShared){
     sonarTCPSocket = std::make_shared<EZSocket::TCPSocket>();
     sonarUDPSocket = std::make_shared<EZSocket::UDPSocket>();
     sonarAddress = "empty";
@@ -321,8 +321,11 @@ void OculusSonar::processSimplePingResult(OculusMessages::OculusSimplePingResult
         lastImage->width  = beams;
 
         printf("OculusSonar: Copy image\n");
-        *sharedImagePtr_ = cv::Mat(ranges, beams, CV_8U);
-        std::memcpy(sharedImagePtr_->data, startAddress + imageOffset, imageSize);
+        cv::Mat image = cv::Mat(ranges, beams, CV_8U);
+        std::memcpy(image.data, startAddress + imageOffset, imageSize);
+        cvBridgeShared_->image = image;     // This is a shallow copy dont worry. image can go out of scope.
+        cvBridgeShared_->encoding = "mono8";
+
         
         printf("OculusSonar: Copied image\n");
 
