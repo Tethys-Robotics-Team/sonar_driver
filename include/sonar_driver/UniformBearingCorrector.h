@@ -10,13 +10,11 @@
 struct UniformBearingCorrectorConfig{
     UniformBearingCorrectorConfig(int rows, int cols,
                                   double minRange, double maxRange, 
-                                  const std::vector<int16_t>& bearings) : 
-                                  rows(rows), cols(cols), minRange(minRange), maxRange(maxRange){
-        setBearings(bearings);
-        fov = (bearings.back() - bearings.front()) / 100.0;
-        angularResolution = fov / (double)cols;
-        rangeResolution = (maxRange - minRange) / (double)rows;
-        spdlog::info("UniformBearingCorrectorConfig: Size {}/{}, Resolution: {}/{}, FOV: {}", rows, cols, rangeResolution, angularResolution, fov);
+                                  double angularResolution) : 
+                                  rows(rows), cols(cols), minRange(minRange), maxRange(maxRange), angularResolution(angularResolution){
+        this->fov = cols * angularResolution;
+        this->rangeResolution = (maxRange - minRange) / (double)rows;
+        spdlog::info("UniformBearingCorrectorConfig: Size {}/{}, Range: {}/{}, Resolution: {}/{}, FOV: {}", rows, cols, minRange, maxRange, rangeResolution, angularResolution, fov);
     }
 
     void setBearings(const std::vector<int16_t>& bearings){
@@ -25,17 +23,17 @@ struct UniformBearingCorrectorConfig{
         std::for_each(bearingMap.begin(), bearingMap.end(), [tempFov](int16_t& number) {number += tempFov/2;});   
     }
 
-    int rows;
-    int cols;
-    double angularResolution;
-    double rangeResolution;
-    double fov;
-    double minRange;
-    double maxRange;
+    int rows = 0;
+    int cols = 0;
+    double angularResolution = 0.0;
+    double rangeResolution = 0.0;
+    double fov = 0.0;
+    double minRange = 0.0;
+    double maxRange = 0.0;
     std::vector<int16_t> bearingMap; 
 
     bool operator==(const UniformBearingCorrectorConfig& config) const{
-        return config.rows == rows && config.cols == cols; 
+        return config.rows == this->rows && config.cols == this->cols; 
     }
 };
 

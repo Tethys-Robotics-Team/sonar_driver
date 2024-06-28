@@ -17,6 +17,9 @@ OculusDriverNode::OculusDriverNode(const std::string& nodeName) : rclcpp::Node(n
     // cv_imgShared_ = cv_bridge::CvImage(std_msgs::msg::Header(), sensor_msgs::image_encodings::MONO8, cv::Mat(512, 512, CV_8U));
     sonar_ = std::make_unique<OculusSonar>(cvBridgeShared_);
 
+    UniformBearingCorrectorConfig initConfig(0, 0, 0.0, 0.0, 0.0);
+    bearingCorrector_ = std::make_shared<UniformBearingCorrector>(initConfig);
+
     updateCommonHeader();
 
     sub_reconfiguration = this->create_subscription<sonar_driver_interfaces::msg::SonarConfigurationChange>(
@@ -31,11 +34,14 @@ void OculusDriverNode::cb_simplePingResult(std::unique_ptr<SonarImage>& image){
     updateCommonHeader();
     printf("OculusDriverNode: Correcting image\n");
 
+    double angularResolution = (sonar_->getBearingTable().back() - sonar_->getBearingTable().front()) / (100.0 * image->width);
+    // spdlog::info("back: {}. front: {}. Diff: {}. Angular: {}. Width: {}", sonar_->getBearingTable().back(), sonar_->getBearingTable().front(), (sonar_->getBearingTable().back() - sonar_->getBearingTable().front()), angularResolution, image->width);
     UniformBearingCorrectorConfig currentConfig(image->height, image->width, 
                                                 sonar_->getMinimumRange(), sonar_->getMaximumRange(),
-                                                sonar_->getBearingTable());
+                                                angularResolution);
 
     if(!bearingCorrector_->hasSameConfig(currentConfig)){
+        currentConfig.setBearings(sonar_->getBearingTable());
         bearingCorrector_ = std::make_shared<UniformBearingCorrector>(currentConfig);
     }
 
