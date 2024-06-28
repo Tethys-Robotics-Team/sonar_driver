@@ -65,7 +65,7 @@ protected:
 
     void cb_reconfiguration(const sonar_driver_interfaces::msg::SonarConfigurationChange::SharedPtr msg);
 
-    // UniformBearingCorrector bearingCorrector;
+    std::shared_ptr<UniformBearingCorrector> bearingCorrector_;
 
     std_msgs::msg::Header commonHeader_;
     sensor_msgs::msg::Image msg_image_;

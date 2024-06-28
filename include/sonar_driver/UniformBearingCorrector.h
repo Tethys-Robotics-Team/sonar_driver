@@ -7,28 +7,56 @@
 #include "spdlog/fmt/ostr.h"
 
 
-UniformBearingCorrectorConfig{
+struct UniformBearingCorrectorConfig{
+    UniformBearingCorrectorConfig(int rows, int cols,
+                                  double minRange, double maxRange, 
+                                  const std::vector<int16_t>& bearings) : 
+                                  rows(rows), cols(cols), minRange(minRange), maxRange(maxRange){
+        setBearings(bearings);
+        fov = (bearings.back() - bearings.front()) / 100.0;
+        angularResolution = fov / (double)cols;
+        rangeResolution = (maxRange - minRange) / (double)rows;
+        spdlog::info("UniformBearingCorrectorConfig: Size {}/{}, Resolution: {}/{}, FOV: {}", rows, cols, rangeResolution, angularResolution, fov);
+    }
+
+    void setBearings(const std::vector<int16_t>& bearings){
+        bearingMap = std::vector<int16_t>(bearings);
+        double tempFov = (bearings.back() - bearings.front()); 
+        std::for_each(bearingMap.begin(), bearingMap.end(), [tempFov](int16_t& number) {number += tempFov/2;});   
+    }
+
     int rows;
     int cols;
     double angularResolution;
     double rangeResolution;
+    double fov;
     double minRange;
     double maxRange;
-}
+    std::vector<int16_t> bearingMap; 
+
+    bool operator==(const UniformBearingCorrectorConfig& config) const{
+        return config.rows == rows && config.cols == cols; 
+    }
+};
 
 
 
 class UniformBearingCorrector {
 public:
-    UniformBearingCorrector(UniformBearingCorrectorConfig config);
-    void computeRemapMatrices(const UniformBearingCorrectorConfig& config, cv::Mat& mapX, cv::Mat& mapY);
+    UniformBearingCorrector(const UniformBearingCorrectorConfig& config);
+    void computeRemapMatrices(cv::Mat& mapX, cv::Mat& mapY);
 
-    void rectifyImage(const cv::Mat& img_sonar, cv::Mat& img_uniform, const std::vector<int16_t>& bearings, cv::Mat& img_rect);
+    void rectifyImage(const cv::Mat& img_sonar, cv::Mat& img_uniform, cv::Mat& img_rect);
 
     static std::vector<double> linspace(const int& start_in, const int& end_in, const int& num_in);
     static cv::Mat interp(const std::vector<int16_t>& xp, const cv::Mat& yp, const std::vector<double>& x);
 
     static cv::Mat applyAlongAxis(const cv::Mat& inputMatrix, const int& axis, const std::vector<double>& linearMap, const std::vector<int16_t>& bearingMap);
+
+    bool hasSameConfig(const UniformBearingCorrectorConfig& config) const{
+        return config == config_;
+    }
+    
 private:
     UniformBearingCorrectorConfig config_;
     cv::Mat mapX_;

@@ -79,7 +79,28 @@ install(TARGETS OculusDriverNode
   DESTINATION lib/${PROJECT_NAME})
 
 
-if(BUILD_TESTING)
+
+
+# add_executable(BridgeTest src/BridgeTest.cpp)
+# target_link_libraries(BridgeTest
+#     ${OpenCV_LIBRARIES}
+#     ${cv_bridge_LIBRARIES}
+#     ${rclcpp_LIBRARIES}
+# )
+# 
+# ament_target_dependencies(BridgeTest 
+#   rclcpp
+#   std_msgs
+#   sensor_msgs
+#   geometry_msgs
+#   sonar_driver_interfaces
+# )
+# install(TARGETS BridgeTest
+#   EXPORT export_${PROJECT_NAME}
+#   DESTINATION lib/${PROJECT_NAME})
+
+
+  if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   # the following line skips the linter which checks for copyrights
   # uncomment the line when a copyright and license is not present in all source files
