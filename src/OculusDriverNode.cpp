@@ -21,6 +21,8 @@ OculusDriverNode::OculusDriverNode(const std::string& nodeName) : rclcpp::Node(n
     bearingCorrector_ = std::make_shared<UniformBearingCorrector>(initConfig);
 
     updateCommonHeader();
+    cvBridgeUniform_->encoding = "mono8";
+    cvBridgeCartesian_->encoding = "mono8";
 
     sub_reconfiguration = this->create_subscription<sonar_driver_interfaces::msg::SonarConfigurationChange>(
         "reconfigure", 10, std::bind(&OculusDriverNode::cb_reconfiguration, this, std::placeholders::_1)
@@ -46,7 +48,7 @@ void OculusDriverNode::cb_simplePingResult(std::unique_ptr<SonarImage>& image){
     }
 
 
-    bearingCorrector_->rectifyImage(cvBridgeShared_->image, cvBridgeUniform_->image, cvBridgeUniform_->image);
+    bearingCorrector_->rectifyImage(cvBridgeShared_->image, cvBridgeUniform_->image, cvBridgeCartesian_->image);
     
     printf("OculusDriverNode: Corrected image\n");
     
@@ -66,18 +68,18 @@ void OculusDriverNode::updateCommonHeader(){
 }
 
 void OculusDriverNode::publishImage(){
-    cv_bridge::CvImage bridge(commonHeader_, sensor_msgs::image_encodings::MONO8, std::move(cv_imgShared_));
-    this->pub_img->publish(*bridge.toImageMsg());
+    // cv_bridge::CvImage bridge(commonHeader_, sensor_msgs::image_encodings::MONO8, std::move(cv_imgShared_));
+    this->pub_img->publish(*cvBridgeShared_->toImageMsg());
 }
 
 void OculusDriverNode::publishCartesianImage(){
-    cv_bridge::CvImage bridge(commonHeader_, sensor_msgs::image_encodings::MONO8, std::move(cv_imgCartesian_));
-    this->pub_imgCartesian->publish(*bridge.toImageMsg());
+    // cv_bridge::CvImage bridge(commonHeader_, sensor_msgs::image_encodings::MONO8, std::move(cv_imgCartesian_));
+    this->pub_imgCartesian->publish(*cvBridgeCartesian_->toImageMsg());
 }
 
 void OculusDriverNode::publishUniformImage(){
-    cv_bridge::CvImage bridge(commonHeader_, sensor_msgs::image_encodings::MONO8, std::move(cv_imgUniform_));
-    this->pub_imgUniform->publish(*bridge.toImageMsg());
+    // cv_bridge::CvImage bridge(commonHeader_, sensor_msgs::image_encodings::MONO8, std::move(cv_imgUniform_));
+    this->pub_imgUniform->publish(*cvBridgeUniform_->toImageMsg());
 }
 
 void OculusDriverNode::publishAdditionalInformation1(OculusSonarImage &image){

@@ -23,8 +23,8 @@ struct UniformBearingCorrectorConfig{
         std::for_each(bearingMap.begin(), bearingMap.end(), [tempFov](int16_t& number) {number += tempFov/2;});   
     }
 
-    int rows = 0;
-    int cols = 0;
+    int rows = 1;
+    int cols = 1;
     double angularResolution = 0.0;
     double rangeResolution = 0.0;
     double fov = 0.0;
@@ -33,7 +33,9 @@ struct UniformBearingCorrectorConfig{
     std::vector<int16_t> bearingMap; 
 
     bool operator==(const UniformBearingCorrectorConfig& config) const{
-        return config.rows == this->rows && config.cols == this->cols; 
+        return config.rows == this->rows && config.cols == this->cols &&
+               config.angularResolution == this->angularResolution && config.rangeResolution == this->rangeResolution &&
+               config.minRange == this->minRange && config.maxRange == this->maxRange; 
     }
 };
 
@@ -43,6 +45,8 @@ class UniformBearingCorrector {
 public:
     UniformBearingCorrector(const UniformBearingCorrectorConfig& config);
     void computeRemapMatrices(cv::Mat& mapX, cv::Mat& mapY);
+    void computeUniformRemapMatrices(cv::Mat& mapX, cv::Mat& mapY);
+    
 
     void rectifyImage(const cv::Mat& img_sonar, cv::Mat& img_uniform, cv::Mat& img_rect);
 
@@ -59,5 +63,7 @@ private:
     UniformBearingCorrectorConfig config_;
     cv::Mat mapX_;
     cv::Mat mapY_;
+    cv::Mat uniformMapX_;
+    cv::Mat uniformMapY_;
 };
 
