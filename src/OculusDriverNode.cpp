@@ -74,12 +74,16 @@ void OculusDriverNode::publishImage(){
 
 void OculusDriverNode::publishCartesianImage(){
     // cv_bridge::CvImage bridge(commonHeader_, sensor_msgs::image_encodings::MONO8, std::move(cv_imgCartesian_));
-    this->pub_imgCartesian->publish(*cvBridgeCartesian_->toImageMsg());
+    auto msg_cartesian = cvBridgeCartesian_->toImageMsg();
+    msg_cartesian->header = commonHeader_;
+    this->pub_imgCartesian->publish(*msg_cartesian);
 }
 
 void OculusDriverNode::publishUniformImage(){
     // cv_bridge::CvImage bridge(commonHeader_, sensor_msgs::image_encodings::MONO8, std::move(cv_imgUniform_));
-    this->pub_imgUniform->publish(*cvBridgeUniform_->toImageMsg());
+    auto msg_uniform = cvBridgeUniform_->toImageMsg();
+    msg_uniform->header = commonHeader_;
+    this->pub_imgUniform->publish(*msg_uniform);
 }
 
 void OculusDriverNode::publishAdditionalInformation1(OculusSonarImage &image){
@@ -185,7 +189,7 @@ int main(int argc, char **argv){
 
     // Configure sonar
     node->sonar_->configure(2, 5.0, 80.0, 0.0, 0.0, false, 255, 0xff);
-    node->sonar_->setPingRate(40);
+    node->sonar_->setPingRate(0);
     
     SonarCallback callback = [&node](std::unique_ptr<SonarImage>& image) -> void {
         node->cb_simplePingResult(image);
