@@ -188,7 +188,7 @@ int main(int argc, char **argv){
     }
 
     // Configure sonar
-    node->sonar_->configure(2, 5.0, 80.0, 0.0, 0.0, false, 255, 0xff);
+    node->sonar_->configure(2, 10.0, 80.0, 0.0, 0.0, true, 255, 0xff);
     node->sonar_->setPingRate(0);
     
     SonarCallback callback = [&node](std::unique_ptr<SonarImage>& image) -> void {
@@ -198,12 +198,11 @@ int main(int argc, char **argv){
     // Register the callback
     node->sonar_->registerCallback(callback);
 
-    printf("OculusDriverNode: Starting Loop\n");
     while (rclcpp::ok()){
         rclcpp::spin_some(node);
         printf("OculusDriverNode: Firing\n");
         node->sonar_->fire();
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 
 
