@@ -386,6 +386,14 @@ double OculusSonar::getBeamSeparation(){
                     return 0.16;
                 break; // Unknown fire mode -> Cannot determine beam separation for M1200d
             }
+        case OculusMessages::OculusPartNumberType::partNumberM3000d:
+            {
+                if (fireMode == 1) // Low frequency
+                    return 0.25;
+                else if (fireMode == 2) // High frequency
+                    return 0.1;
+                break; // Unknown fire mode -> Cannot determine beam separation for M3000d
+            }
         default:
             break; // Unknown part number -> Cannot determine beam separation
     }
@@ -402,10 +410,10 @@ double OculusSonar::getMinimumRange(){
         case OculusMessages::OculusPartNumberType::partNumberM750d:
         case OculusMessages::OculusPartNumberType::partNumberM750d_Artemis:
         case OculusMessages::OculusPartNumberType::partNumberM750d_Fusion:
-            return 0.1;
         case OculusMessages::OculusPartNumberType::partNumberM1200d:
         case OculusMessages::OculusPartNumberType::partNumberM1200d_Artemis:
         case OculusMessages::OculusPartNumberType::partNumberM1200d_Deep:
+        case OculusMessages::OculusPartNumberType::partNumberM3000d:
             return 0.1;
         default:
             break; // Unknown part number -> Cannot determine minimum range
@@ -439,6 +447,14 @@ double OculusSonar::getMaximumRange(){
                 else if (fireMode == 2) // High frequency
                     return 10.0;
                 break; // Unknown fire mode -> Cannot determine maximum range for M1200d
+            }
+        case OculusMessages::OculusPartNumberType::partNumberM3000d:
+            {
+                if (fireMode == 1) // Low frequency
+                    return 30.0;
+                else if (fireMode == 2) // High frequency
+                    return 5.0;
+                break; // Unknown fire mode -> Cannot determine maximum range for M3000d
             }
         default:
             break; // Unknown part number -> Cannot determine maximum range
@@ -474,6 +490,14 @@ double OculusSonar::getHorzFOV(){
                     return 60.0;
                 break; // Unknown fire mode -> Cannot determine horzFOV for M1200d
             }
+        case OculusMessages::OculusPartNumberType::partNumberM3000d:
+            {
+                if (fireMode == 1) // Low frequency
+                    return 130.0;
+                else if (fireMode == 2) // High frequency
+                    return 40.0;
+                break; // Unknown fire mode -> Cannot determine horzFOV for M3000d
+            }
         default:
             break; // Unknown part number -> Cannot determine horzFOV
     }
@@ -500,6 +524,8 @@ double OculusSonar::getVertFOV(){
                     return 12.0;
                 break; // Unknown fire mode -> Cannot determine vertFOV for M1200d
             }
+        case OculusMessages::OculusPartNumberType::partNumberM3000d:
+            return 20.0;
         default:
             break; // Unknown part number -> Cannot determine vertFOV
     }
@@ -526,6 +552,7 @@ double OculusSonar::getAngularResolution(){
         case OculusMessages::OculusPartNumberType::partNumberM1200d:
         case OculusMessages::OculusPartNumberType::partNumberM1200d_Artemis:
         case OculusMessages::OculusPartNumberType::partNumberM1200d_Deep:
+        case OculusMessages::OculusPartNumberType::partNumberM3000d:
             {
                 if (fireMode == 1) // Low frequency
                     return 0.6;
@@ -560,6 +587,8 @@ std::string OculusSonar::getDeviceName() {
             return "Oculus M1200d-Artemis";
         case OculusMessages::OculusPartNumberType::partNumberM1200d_Deep:
             return "Oculus M1200d-Deep";
+        case OculusMessages::OculusPartNumberType::partNumberM3000d:
+            return "Oculus M3000d";
         default:
             return "Unknown Oculus Sonar";
     }

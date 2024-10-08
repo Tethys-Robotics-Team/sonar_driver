@@ -87,6 +87,8 @@ namespace OculusMessages
         partNumberN1200s = 1220,
         partNumberN1200s_Deep = 1221,
 
+        partNumberM3000d = 2203,
+
         partNumberEnd = 0xFFFF
     };
 
