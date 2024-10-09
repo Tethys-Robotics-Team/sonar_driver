@@ -369,16 +369,26 @@ double OculusSonar::getBeamSeparation(){
     switch (partNumber)
     {
         case OculusMessages::OculusPartNumberType::partNumberM370s:
+        case OculusMessages::OculusPartNumberType::partNumberMT370s:
+        case OculusMessages::OculusPartNumberType::partNumberMD370s:
         case OculusMessages::OculusPartNumberType::partNumberM370s_Artemis:
-        case OculusMessages::OculusPartNumberType::partNumberM370s_Deep:
+        case OculusMessages::OculusPartNumberType::partNumberMD370s_Impulse:
+        case OculusMessages::OculusPartNumberType::partNumberMD370s_Burton:
             return 0.5;
         case OculusMessages::OculusPartNumberType::partNumberM750d:
+        case OculusMessages::OculusPartNumberType::partNumberMT750d:
+        case OculusMessages::OculusPartNumberType::partNumberMD750d:
         case OculusMessages::OculusPartNumberType::partNumberM750d_Artemis:
         case OculusMessages::OculusPartNumberType::partNumberM750d_Fusion:
+        case OculusMessages::OculusPartNumberType::partNumberMD750d_Burton:
+        case OculusMessages::OculusPartNumberType::partNumberMD750d_Impulse:
             return 0.25;
         case OculusMessages::OculusPartNumberType::partNumberM1200d:
+        case OculusMessages::OculusPartNumberType::partNumberMT1200d:
+        case OculusMessages::OculusPartNumberType::partNumberMD1200d:
         case OculusMessages::OculusPartNumberType::partNumberM1200d_Artemis:
-        case OculusMessages::OculusPartNumberType::partNumberM1200d_Deep:
+        case OculusMessages::OculusPartNumberType::partNumberMD1200d_Impulse:
+        case OculusMessages::OculusPartNumberType::partNumberMD1200d_Burton:
             {
                 if (fireMode == 1) // Low frequency
                     return 0.25;
@@ -387,6 +397,9 @@ double OculusSonar::getBeamSeparation(){
                 break; // Unknown fire mode -> Cannot determine beam separation for M1200d
             }
         case OculusMessages::OculusPartNumberType::partNumberM3000d:
+        case OculusMessages::OculusPartNumberType::partNumberMT3000d:
+        case OculusMessages::OculusPartNumberType::partNumberMD3000d_Burton:
+        case OculusMessages::OculusPartNumberType::partNumberMD3000d_Impulse:
             {
                 if (fireMode == 1) // Low frequency
                     return 0.25;
@@ -404,16 +417,29 @@ double OculusSonar::getMinimumRange(){
     switch (partNumber)
     {
         case OculusMessages::OculusPartNumberType::partNumberM370s:
+        case OculusMessages::OculusPartNumberType::partNumberMT370s:
+        case OculusMessages::OculusPartNumberType::partNumberMD370s:
         case OculusMessages::OculusPartNumberType::partNumberM370s_Artemis:
-        case OculusMessages::OculusPartNumberType::partNumberM370s_Deep:
+        case OculusMessages::OculusPartNumberType::partNumberMD370s_Impulse:
+        case OculusMessages::OculusPartNumberType::partNumberMD370s_Burton:
             return 0.2;
         case OculusMessages::OculusPartNumberType::partNumberM750d:
+        case OculusMessages::OculusPartNumberType::partNumberMT750d:
+        case OculusMessages::OculusPartNumberType::partNumberMD750d:
         case OculusMessages::OculusPartNumberType::partNumberM750d_Artemis:
         case OculusMessages::OculusPartNumberType::partNumberM750d_Fusion:
+        case OculusMessages::OculusPartNumberType::partNumberMD750d_Burton:
+        case OculusMessages::OculusPartNumberType::partNumberMD750d_Impulse:
         case OculusMessages::OculusPartNumberType::partNumberM1200d:
+        case OculusMessages::OculusPartNumberType::partNumberMT1200d:
+        case OculusMessages::OculusPartNumberType::partNumberMD1200d:
         case OculusMessages::OculusPartNumberType::partNumberM1200d_Artemis:
-        case OculusMessages::OculusPartNumberType::partNumberM1200d_Deep:
+        case OculusMessages::OculusPartNumberType::partNumberMD1200d_Impulse:
+        case OculusMessages::OculusPartNumberType::partNumberMD1200d_Burton:
         case OculusMessages::OculusPartNumberType::partNumberM3000d:
+        case OculusMessages::OculusPartNumberType::partNumberMT3000d:
+        case OculusMessages::OculusPartNumberType::partNumberMD3000d_Burton:
+        case OculusMessages::OculusPartNumberType::partNumberMD3000d_Impulse:
             return 0.1;
         default:
             break; // Unknown part number -> Cannot determine minimum range
@@ -425,12 +451,19 @@ double OculusSonar::getMaximumRange(){
     switch (partNumber)
     {
         case OculusMessages::OculusPartNumberType::partNumberM370s:
+        case OculusMessages::OculusPartNumberType::partNumberMT370s:
+        case OculusMessages::OculusPartNumberType::partNumberMD370s:
         case OculusMessages::OculusPartNumberType::partNumberM370s_Artemis:
-        case OculusMessages::OculusPartNumberType::partNumberM370s_Deep:
+        case OculusMessages::OculusPartNumberType::partNumberMD370s_Impulse:
+        case OculusMessages::OculusPartNumberType::partNumberMD370s_Burton:
             return 200.0;
         case OculusMessages::OculusPartNumberType::partNumberM750d:
+        case OculusMessages::OculusPartNumberType::partNumberMT750d:
+        case OculusMessages::OculusPartNumberType::partNumberMD750d:
         case OculusMessages::OculusPartNumberType::partNumberM750d_Artemis:
         case OculusMessages::OculusPartNumberType::partNumberM750d_Fusion:
+        case OculusMessages::OculusPartNumberType::partNumberMD750d_Burton:
+        case OculusMessages::OculusPartNumberType::partNumberMD750d_Impulse:
             {
                 if (fireMode == 1) // Low frequency
                     return 120.0;
@@ -439,8 +472,11 @@ double OculusSonar::getMaximumRange(){
                 break; // Unknown fire mode -> Cannot determine maximum range for M750d
             }
         case OculusMessages::OculusPartNumberType::partNumberM1200d:
+        case OculusMessages::OculusPartNumberType::partNumberMT1200d:
+        case OculusMessages::OculusPartNumberType::partNumberMD1200d:
         case OculusMessages::OculusPartNumberType::partNumberM1200d_Artemis:
-        case OculusMessages::OculusPartNumberType::partNumberM1200d_Deep:
+        case OculusMessages::OculusPartNumberType::partNumberMD1200d_Impulse:
+        case OculusMessages::OculusPartNumberType::partNumberMD1200d_Burton:
             {
                 if (fireMode == 1) // Low frequency
                     return 40.0;
@@ -449,6 +485,9 @@ double OculusSonar::getMaximumRange(){
                 break; // Unknown fire mode -> Cannot determine maximum range for M1200d
             }
         case OculusMessages::OculusPartNumberType::partNumberM3000d:
+        case OculusMessages::OculusPartNumberType::partNumberMT3000d:
+        case OculusMessages::OculusPartNumberType::partNumberMD3000d_Burton:
+        case OculusMessages::OculusPartNumberType::partNumberMD3000d_Impulse:
             {
                 if (fireMode == 1) // Low frequency
                     return 30.0;
@@ -474,15 +513,25 @@ double OculusSonar::getHorzFOV(){
     switch (partNumber)
     {
         case OculusMessages::OculusPartNumberType::partNumberM370s:
+        case OculusMessages::OculusPartNumberType::partNumberMT370s:
+        case OculusMessages::OculusPartNumberType::partNumberMD370s:
         case OculusMessages::OculusPartNumberType::partNumberM370s_Artemis:
-        case OculusMessages::OculusPartNumberType::partNumberM370s_Deep:
+        case OculusMessages::OculusPartNumberType::partNumberMD370s_Impulse:
+        case OculusMessages::OculusPartNumberType::partNumberMD370s_Burton:
         case OculusMessages::OculusPartNumberType::partNumberM750d:
+        case OculusMessages::OculusPartNumberType::partNumberMT750d:
+        case OculusMessages::OculusPartNumberType::partNumberMD750d:
         case OculusMessages::OculusPartNumberType::partNumberM750d_Artemis:
         case OculusMessages::OculusPartNumberType::partNumberM750d_Fusion:
+        case OculusMessages::OculusPartNumberType::partNumberMD750d_Burton:
+        case OculusMessages::OculusPartNumberType::partNumberMD750d_Impulse:
             return 130.0;
         case OculusMessages::OculusPartNumberType::partNumberM1200d:
+        case OculusMessages::OculusPartNumberType::partNumberMT1200d:
+        case OculusMessages::OculusPartNumberType::partNumberMD1200d:
         case OculusMessages::OculusPartNumberType::partNumberM1200d_Artemis:
-        case OculusMessages::OculusPartNumberType::partNumberM1200d_Deep:
+        case OculusMessages::OculusPartNumberType::partNumberMD1200d_Impulse:
+        case OculusMessages::OculusPartNumberType::partNumberMD1200d_Burton:
             {
                 if (fireMode == 1) // Low frequency
                     return 130.0;
@@ -491,6 +540,9 @@ double OculusSonar::getHorzFOV(){
                 break; // Unknown fire mode -> Cannot determine horzFOV for M1200d
             }
         case OculusMessages::OculusPartNumberType::partNumberM3000d:
+        case OculusMessages::OculusPartNumberType::partNumberMT3000d:
+        case OculusMessages::OculusPartNumberType::partNumberMD3000d_Burton:
+        case OculusMessages::OculusPartNumberType::partNumberMD3000d_Impulse:
             {
                 if (fireMode == 1) // Low frequency
                     return 130.0;
@@ -508,15 +560,29 @@ double OculusSonar::getVertFOV(){
     switch (partNumber)
     {
         case OculusMessages::OculusPartNumberType::partNumberM370s:
+        case OculusMessages::OculusPartNumberType::partNumberMT370s:
+        case OculusMessages::OculusPartNumberType::partNumberMD370s:
         case OculusMessages::OculusPartNumberType::partNumberM370s_Artemis:
-        case OculusMessages::OculusPartNumberType::partNumberM370s_Deep:
+        case OculusMessages::OculusPartNumberType::partNumberMD370s_Impulse:
+        case OculusMessages::OculusPartNumberType::partNumberMD370s_Burton:
         case OculusMessages::OculusPartNumberType::partNumberM750d:
+        case OculusMessages::OculusPartNumberType::partNumberMT750d:
+        case OculusMessages::OculusPartNumberType::partNumberMD750d:
         case OculusMessages::OculusPartNumberType::partNumberM750d_Artemis:
         case OculusMessages::OculusPartNumberType::partNumberM750d_Fusion:
+        case OculusMessages::OculusPartNumberType::partNumberMD750d_Burton:
+        case OculusMessages::OculusPartNumberType::partNumberMD750d_Impulse:
+        case OculusMessages::OculusPartNumberType::partNumberM3000d:
+        case OculusMessages::OculusPartNumberType::partNumberMT3000d:
+        case OculusMessages::OculusPartNumberType::partNumberMD3000d_Burton:
+        case OculusMessages::OculusPartNumberType::partNumberMD3000d_Impulse:
             return 20.0;
         case OculusMessages::OculusPartNumberType::partNumberM1200d:
+        case OculusMessages::OculusPartNumberType::partNumberMT1200d:
+        case OculusMessages::OculusPartNumberType::partNumberMD1200d:
         case OculusMessages::OculusPartNumberType::partNumberM1200d_Artemis:
-        case OculusMessages::OculusPartNumberType::partNumberM1200d_Deep:
+        case OculusMessages::OculusPartNumberType::partNumberMD1200d_Impulse:
+        case OculusMessages::OculusPartNumberType::partNumberMD1200d_Burton:
             {
                 if (fireMode == 1) // Low frequency
                     return 20.0;
@@ -524,8 +590,6 @@ double OculusSonar::getVertFOV(){
                     return 12.0;
                 break; // Unknown fire mode -> Cannot determine vertFOV for M1200d
             }
-        case OculusMessages::OculusPartNumberType::partNumberM3000d:
-            return 20.0;
         default:
             break; // Unknown part number -> Cannot determine vertFOV
     }
@@ -536,12 +600,19 @@ double OculusSonar::getAngularResolution(){
     switch (partNumber)
     {
         case OculusMessages::OculusPartNumberType::partNumberM370s:
+        case OculusMessages::OculusPartNumberType::partNumberMT370s:
+        case OculusMessages::OculusPartNumberType::partNumberMD370s:
         case OculusMessages::OculusPartNumberType::partNumberM370s_Artemis:
-        case OculusMessages::OculusPartNumberType::partNumberM370s_Deep:
+        case OculusMessages::OculusPartNumberType::partNumberMD370s_Impulse:
+        case OculusMessages::OculusPartNumberType::partNumberMD370s_Burton:
             return 0.2;
         case OculusMessages::OculusPartNumberType::partNumberM750d:
+        case OculusMessages::OculusPartNumberType::partNumberMT750d:
+        case OculusMessages::OculusPartNumberType::partNumberMD750d:
         case OculusMessages::OculusPartNumberType::partNumberM750d_Artemis:
         case OculusMessages::OculusPartNumberType::partNumberM750d_Fusion:
+        case OculusMessages::OculusPartNumberType::partNumberMD750d_Burton:
+        case OculusMessages::OculusPartNumberType::partNumberMD750d_Impulse:
             {
                 if (fireMode == 1) // Low frequency
                     return 1.0;
@@ -550,9 +621,15 @@ double OculusSonar::getAngularResolution(){
                 break; // Unknown fire mode -> Cannot determine angular resolution for M750d
             }
         case OculusMessages::OculusPartNumberType::partNumberM1200d:
+        case OculusMessages::OculusPartNumberType::partNumberMT1200d:
+        case OculusMessages::OculusPartNumberType::partNumberMD1200d:
         case OculusMessages::OculusPartNumberType::partNumberM1200d_Artemis:
-        case OculusMessages::OculusPartNumberType::partNumberM1200d_Deep:
+        case OculusMessages::OculusPartNumberType::partNumberMD1200d_Impulse:
+        case OculusMessages::OculusPartNumberType::partNumberMD1200d_Burton:
         case OculusMessages::OculusPartNumberType::partNumberM3000d:
+        case OculusMessages::OculusPartNumberType::partNumberMT3000d:
+        case OculusMessages::OculusPartNumberType::partNumberMD3000d_Burton:
+        case OculusMessages::OculusPartNumberType::partNumberMD3000d_Impulse:
             {
                 if (fireMode == 1) // Low frequency
                     return 0.6;
@@ -571,24 +648,50 @@ std::string OculusSonar::getDeviceName() {
     {
         case OculusMessages::OculusPartNumberType::partNumberM370s:
             return "Oculus M370s";
+        case OculusMessages::OculusPartNumberType::partNumberMT370s:
+            return "Oculus MT370s";
+        case OculusMessages::OculusPartNumberType::partNumberMD370s:
+            return "Oculus MD370s";
         case OculusMessages::OculusPartNumberType::partNumberM370s_Artemis:
             return "Oculus M370s-Artemis";
-        case OculusMessages::OculusPartNumberType::partNumberM370s_Deep:
-            return "Oculus M370s-Deep";
+        case OculusMessages::OculusPartNumberType::partNumberMD370s_Impulse:
+            return "Oculus MD370s-Impulse";
+        case OculusMessages::OculusPartNumberType::partNumberMD370s_Burton:
+            return "Oculus MD370s-Burton";
         case OculusMessages::OculusPartNumberType::partNumberM750d:
             return "Oculus M750d";
+        case OculusMessages::OculusPartNumberType::partNumberMT750d:
+            return "Oculus MT750d";
+        case OculusMessages::OculusPartNumberType::partNumberMD750d:
+            return "Oculus MD750d";
         case OculusMessages::OculusPartNumberType::partNumberM750d_Artemis:
             return "Oculus M750d-Artemis";
         case OculusMessages::OculusPartNumberType::partNumberM750d_Fusion:
             return "Oculus M750d-Fusion";
+        case OculusMessages::OculusPartNumberType::partNumberMD750d_Burton:
+            return "Oculus MD750d-Burton";
+        case OculusMessages::OculusPartNumberType::partNumberMD750d_Impulse:
+            return "Oculus MD750d-Impulse";
         case OculusMessages::OculusPartNumberType::partNumberM1200d:
             return "Oculus M1200d";
+        case OculusMessages::OculusPartNumberType::partNumberMT1200d:
+            return "Oculus MT1200d";
+        case OculusMessages::OculusPartNumberType::partNumberMD1200d:
+            return "Oculus MD1200d";
         case OculusMessages::OculusPartNumberType::partNumberM1200d_Artemis:
             return "Oculus M1200d-Artemis";
-        case OculusMessages::OculusPartNumberType::partNumberM1200d_Deep:
-            return "Oculus M1200d-Deep";
+        case OculusMessages::OculusPartNumberType::partNumberMD1200d_Impulse:
+            return "Oculus MD1200d-Impulse";
+        case OculusMessages::OculusPartNumberType::partNumberMD1200d_Burton:
+            return "Oculus MD1200d-Burton";
         case OculusMessages::OculusPartNumberType::partNumberM3000d:
             return "Oculus M3000d";
+        case OculusMessages::OculusPartNumberType::partNumberMT3000d:
+            return "Oculus MT3000d";
+        case OculusMessages::OculusPartNumberType::partNumberMD3000d_Burton:
+            return "Oculus MD3000d-Burton";
+        case OculusMessages::OculusPartNumberType::partNumberMD3000d_Impulse:
+            return "Oculus MD3000d-Impulse";
         default:
             return "Unknown Oculus Sonar";
     }
