@@ -72,20 +72,38 @@ namespace OculusMessages
 
         partNumberM370s = 1041,
         partNumberM370s_Artemis = 1229,
-        partNumberM370s_Deep = 1217,
+        partNumberMD370s_Impulse = 1217,
+        partNumberMD370s = 1433,
+        partNumberMT370s = 2418,
+        partNumberMD370s_Burton = 2294,
+
         partNumberM373s = 1209,
         partNumberM373s_Deep = 1218,
+
+        partNumberC550d = 4713,
 
         partNumberM750d = 1032,
         partNumberM750d_Fusion = 1134,
         partNumberM750d_Artemis = 1135,
+        partNumberMT750d = 2419,
+        partNumberMD750d = 1434,
+        partNumberMD750d_Burton = 1921,
+        partNumberMD750d_Impulse = 1244,
 
         partNumberM1200d = 1042,
-        partNumberM1200d_Deep = 1219,
+        partNumberMD1200d_Impulse = 1219,
         partNumberM1200d_Artemis = 1228,
+        partNumberMT1200d = 2420,
+        partNumberMD1200d = 1435,
+        partNumberMD1200d_Burton = 2086,
 
         partNumberN1200s = 1220,
         partNumberN1200s_Deep = 1221,
+
+        partNumberM3000d = 2203,
+        partNumberMT3000d = 2599,
+        partNumberMD3000d_Burton = 2659,
+        partNumberMD3000d_Impulse = 2658,
 
         partNumberEnd = 0xFFFF
     };
