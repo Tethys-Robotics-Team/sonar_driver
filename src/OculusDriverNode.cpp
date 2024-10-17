@@ -11,8 +11,8 @@ OculusDriverNode::OculusDriverNode(const std::string& nodeName) : rclcpp::Node(n
     pub_pressure = this->create_publisher<sensor_msgs::msg::FluidPressure>("pressure", 10);
     pub_temperature = this->create_publisher<sensor_msgs::msg::Temperature>("temperature", 10);
     pub_orientation = this->create_publisher<geometry_msgs::msg::Vector3Stamped>("orientation", 10);
-    pub_configuration = this->create_publisher<sonar_driver_interfaces::msg::SonarConfiguration>("configuration", 10);
-    pub_bearings = this->create_publisher<sonar_driver_interfaces::msg::SonarBearings>("bearings", 10);
+    pub_configuration = this->create_publisher<sonar_driver_interface::msg::SonarConfiguration>("configuration", 10);
+    pub_bearings = this->create_publisher<sonar_driver_interface::msg::SonarBearings>("bearings", 10);
     
     // cv_imgShared_ = cv_bridge::CvImage(std_msgs::msg::Header(), sensor_msgs::image_encodings::MONO8, cv::Mat(512, 512, CV_8U));
     sonar_ = std::make_unique<OculusSonar>(cvBridgeShared_);
@@ -24,7 +24,7 @@ OculusDriverNode::OculusDriverNode(const std::string& nodeName) : rclcpp::Node(n
     cvBridgeUniform_->encoding = "mono8";
     cvBridgeCartesian_->encoding = "mono8";
 
-    sub_reconfiguration = this->create_subscription<sonar_driver_interfaces::msg::SonarConfigurationChange>(
+    sub_reconfiguration = this->create_subscription<sonar_driver_interface::msg::SonarConfigurationChange>(
         "reconfigure", 10, std::bind(&OculusDriverNode::cb_reconfiguration, this, std::placeholders::_1)
     );
 
@@ -121,7 +121,7 @@ void OculusDriverNode::publishTemperature(double temperature){
 
 
 void OculusDriverNode::publishCurrentConfig(){
-    sonar_driver_interfaces::msg::SonarConfiguration configuration;
+    sonar_driver_interface::msg::SonarConfiguration configuration;
 
     configuration.header = commonHeader_;
 
@@ -152,7 +152,7 @@ void OculusDriverNode::publishCurrentConfig(){
     pub_configuration->publish(configuration);
 
     // Publish the bearing table 
-    sonar_driver_interfaces::msg::SonarBearings msg_bearings;
+    sonar_driver_interface::msg::SonarBearings msg_bearings;
     msg_bearings.header = commonHeader_;
     msg_bearings.bearings = sonar_->getBearingTable();
     this->pub_bearings->publish(msg_bearings);
@@ -160,7 +160,7 @@ void OculusDriverNode::publishCurrentConfig(){
 }
 
 
-void OculusDriverNode::cb_reconfiguration(const sonar_driver_interfaces::msg::SonarConfigurationChange::SharedPtr msg){
+void OculusDriverNode::cb_reconfiguration(const sonar_driver_interface::msg::SonarConfigurationChange::SharedPtr msg){
     sonar_->configure(
         msg->fire_mode,
         msg->range,

@@ -16,7 +16,7 @@ find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
-find_package(sonar_driver_interfaces REQUIRED)
+find_package(sonar_driver_interface REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(cv_bridge REQUIRED)
 
@@ -67,7 +67,7 @@ ament_target_dependencies(OculusDriverNode
   std_msgs
   sensor_msgs
   geometry_msgs
-  sonar_driver_interfaces
+  sonar_driver_interface
 )
 target_include_directories(OculusDriverNode PUBLIC
   include/sonar_driver
@@ -93,7 +93,7 @@ install(TARGETS OculusDriverNode
 #   std_msgs
 #   sensor_msgs
 #   geometry_msgs
-#   sonar_driver_interfaces
+#   sonar_driver_interface
 # )
 # install(TARGETS BridgeTest
 #   EXPORT export_${PROJECT_NAME}

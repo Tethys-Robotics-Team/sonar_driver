@@ -14,9 +14,9 @@
 #include "sensor_msgs/msg/temperature.hpp"
 #include "geometry_msgs/msg/vector3_stamped.hpp"
 
-#include <sonar_driver_interfaces/msg/sonar_configuration.hpp>
-#include <sonar_driver_interfaces/msg/sonar_configuration_change.hpp>
-#include <sonar_driver_interfaces/msg/sonar_bearings.hpp>   
+#include <sonar_driver_interface/msg/sonar_configuration.hpp>
+#include <sonar_driver_interface/msg/sonar_configuration_change.hpp>
+#include <sonar_driver_interface/msg/sonar_bearings.hpp>   
 
 
 #include <cv_bridge/cv_bridge.h>
@@ -40,10 +40,10 @@ public:
     rclcpp::Publisher<sensor_msgs::msg::FluidPressure>::SharedPtr pub_pressure;
     rclcpp::Publisher<sensor_msgs::msg::Temperature>::SharedPtr pub_temperature;
     rclcpp::Publisher<geometry_msgs::msg::Vector3Stamped>::SharedPtr pub_orientation;
-    rclcpp::Publisher<sonar_driver_interfaces::msg::SonarConfiguration>::SharedPtr pub_configuration;
-    rclcpp::Publisher<sonar_driver_interfaces::msg::SonarBearings>::SharedPtr pub_bearings;
+    rclcpp::Publisher<sonar_driver_interface::msg::SonarConfiguration>::SharedPtr pub_configuration;
+    rclcpp::Publisher<sonar_driver_interface::msg::SonarBearings>::SharedPtr pub_bearings;
 
-    rclcpp::Subscription<sonar_driver_interfaces::msg::SonarConfigurationChange>::SharedPtr sub_reconfiguration;
+    rclcpp::Subscription<sonar_driver_interface::msg::SonarConfigurationChange>::SharedPtr sub_reconfiguration;
 
     void cb_simplePingResult(std::unique_ptr<SonarImage>& image);
 
@@ -63,7 +63,7 @@ protected:
     void publishPressure(double pressure);
     void publishTemperature(double temperature);
 
-    void cb_reconfiguration(const sonar_driver_interfaces::msg::SonarConfigurationChange::SharedPtr msg);
+    void cb_reconfiguration(const sonar_driver_interface::msg::SonarConfigurationChange::SharedPtr msg);
 
     std::shared_ptr<UniformBearingCorrector> bearingCorrector_;
 
