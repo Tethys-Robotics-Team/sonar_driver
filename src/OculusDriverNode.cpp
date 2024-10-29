@@ -69,7 +69,9 @@ void OculusDriverNode::updateCommonHeader(){
 
 void OculusDriverNode::publishImage(){
     // cv_bridge::CvImage bridge(commonHeader_, sensor_msgs::image_encodings::MONO8, std::move(cv_imgShared_));
-    this->pub_img->publish(*cvBridgeShared_->toImageMsg());
+    auto msg_img = cvBridgeShared_->toImageMsg();
+    msg_img->header = commonHeader_;
+    this->pub_img->publish(*msg_img);
 }
 
 void OculusDriverNode::publishCartesianImage(){
