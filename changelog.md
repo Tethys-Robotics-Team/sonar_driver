@@ -1,12 +1,18 @@
 # Changelog
 
-
-## [1.0.0] - 2025-01-15
+## [1.0.0] - 2024-10-15
 
 ### Added
-- Blueprint Subsea M1200 and 3000 serieries support added
-- Builtin image undistortion for equiangular images added
-- Builtin conversion to cartesian images added
+- Support for 3000 Series sonar from Bluepring Subsea
+- Synched publication of Bearing table for each new image
+- Synched publication of Uniform image for each new image
+- Synched publication of Cartesian image for each new image
+- Synched publication of sonar configuration for each new image
+
+### Changed
+- Changes to leverage C++17 features
+- Implementation structure to reduce copying of images
+>>>>>>> origin/dev
 
 ## [0.1.0] - 2023-09-18
 

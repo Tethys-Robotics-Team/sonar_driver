@@ -16,65 +16,91 @@ find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
-find_package(sonar_driver_interfaces REQUIRED)
+find_package(sonar_driver_interface REQUIRED)
+find_package(OpenCV REQUIRED)
+find_package(cv_bridge REQUIRED)
 
-# ezsocket
+include_directories(
+  include
+  ${OpenCV_INCLUDE_DIRS})
+
+# ==================================================================== ezsocket
 add_library(ezsocket 
-  src/sonar_driver/ezsocket/ezsocket.cxx 
-  src/sonar_driver/ezsocket/socketWorker.cxx
+  src/ezsocket/ezsocket.cxx 
+  src/ezsocket/socketWorker.cxx
 )
 if (WIN32)
 target_link_libraries(ezsocket wsock32 ws2_32)
 endif (WIN32)
-
 target_include_directories(ezsocket PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>)
+  $<INSTALL_INTERFACE:include>)# 
 
-# sonardevices
-add_library(sonardevices src/
-  src/sonar_driver/sonardevices/sonardevices.cxx
+# ==================================================================== sonardevices
+
+
+add_library(sonardevices 
+  src/sonardevices/Sonar.cpp
+  src/sonardevices/OculusSonar.cpp
+  src/sonardevices/OculusMessages.cpp
+  src/sonardevices/OculusSonarImage.cpp
+  src/sonardevices/SonarImage.cpp
+  src/UniformBearingCorrector.cpp
 )
 target_link_libraries(sonardevices ezsocket)
-
 target_include_directories(sonardevices PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
+  ament_target_dependencies(sonardevices
+  sensor_msgs)
 
-# oculusDriver
-add_library(oculusDriver src/
-  src/sonar_driver/oculusDriver/oculusDriverNode.cxx
+# ===================================================================== Node
+add_executable(OculusDriverNode src/OculusDriverNode.cpp)
+target_link_libraries(OculusDriverNode
+    ${OpenCV_LIBRARIES}
+    ${cv_bridge_LIBRARIES}
+    ${rclcpp_LIBRARIES}
 )
-ament_target_dependencies(oculusDriver
+target_link_libraries(OculusDriverNode ezsocket sonardevices)
+ament_target_dependencies(OculusDriverNode 
   rclcpp
   std_msgs
   sensor_msgs
   geometry_msgs
-  sonar_driver_interfaces)
-
-target_include_directories(oculusDriver PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>)
-
-# oculus driver node
-add_executable(oculus_driver src/oculus_driver.cxx)
-target_link_libraries(oculus_driver sonardevices oculusDriver)
-ament_target_dependencies(oculus_driver 
-  rclcpp
-  std_msgs
-  sensor_msgs
-  geometry_msgs
+  sonar_driver_interface
 )
-target_include_directories(oculus_driver PUBLIC
+target_include_directories(OculusDriverNode PUBLIC
+  include/sonar_driver
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
 
-install(TARGETS oculus_driver
+install(TARGETS OculusDriverNode
   EXPORT export_${PROJECT_NAME}
   DESTINATION lib/${PROJECT_NAME})
 
 
-if(BUILD_TESTING)
+
+
+# add_executable(BridgeTest src/BridgeTest.cpp)
+# target_link_libraries(BridgeTest
+#     ${OpenCV_LIBRARIES}
+#     ${cv_bridge_LIBRARIES}
+#     ${rclcpp_LIBRARIES}
+# )
+# 
+# ament_target_dependencies(BridgeTest 
+#   rclcpp
+#   std_msgs
+#   sensor_msgs
+#   geometry_msgs
+#   sonar_driver_interface
+# )
+# install(TARGETS BridgeTest
+#   EXPORT export_${PROJECT_NAME}
+#   DESTINATION lib/${PROJECT_NAME})
+
+
+  if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   # the following line skips the linter which checks for copyrights
   # uncomment the line when a copyright and license is not present in all source files

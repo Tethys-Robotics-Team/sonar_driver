@@ -1,12 +1,13 @@
-// File: socketWorker.hxx
-
-#ifndef SOCKETWORKER_HXX
-#define SOCKETWORKER_HXX
+#pragma once
 
 #include <stdint.h>
 #include <thread>
+#include <memory.h>
+#include <chrono>
 #include <mutex>
+
 #include <sonar_driver/ezsocket/ezsocket.hxx>
+
 
 namespace EZSocket
 {
@@ -43,5 +44,3 @@ namespace EZSocket
         static void copyFromRingBuffer(const uint8_t *buffer, void *dst, uint32_t length, uint32_t bufferSize, const uint32_t *writerPos, uint32_t *readerPos);
     };
 } // namespace EZSocket
-
-#endif

@@ -6,4 +6,4 @@ Developed for ROS 2 foxy fitzroy
 
 ## Dependencies
 - [ROS 2](https://docs.ros.org/en/foxy/index.html)
-- [Sonar Driver Interfaces](https://github.com/bastianschildknecht/sonar_driver_interfaces)
+- [Sonar Driver Interfaces](https://github.com/bastianschildknecht/sonar_driver_interface)
