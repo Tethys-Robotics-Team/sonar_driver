@@ -12,7 +12,6 @@
 ### Changed
 - Changes to leverage C++17 features
 - Implementation structure to reduce copying of images
->>>>>>> origin/dev
 
 ## [0.1.0] - 2023-09-18
 
