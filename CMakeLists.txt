@@ -19,6 +19,7 @@ find_package(geometry_msgs REQUIRED)
 find_package(sonar_driver_interface REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(cv_bridge REQUIRED)
+find_package(image_transport REQUIRED)
 
 include_directories(
   include
@@ -68,6 +69,7 @@ ament_target_dependencies(OculusDriverNode
   sensor_msgs
   geometry_msgs
   sonar_driver_interface
+  image_transport
 )
 target_include_directories(OculusDriverNode PUBLIC
   include/sonar_driver

@@ -7,6 +7,8 @@
 
 #include "rclcpp/rclcpp.hpp"
 
+#include "image_transport/image_transport.hpp"
+
 #include "std_msgs/msg/header.hpp"
 #include "sensor_msgs/msg/image.hpp"
 #include <sensor_msgs/image_encodings.hpp>
@@ -34,9 +36,11 @@ public:
     std::unique_ptr<OculusSonar> sonar_;
 
 
-    rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr pub_img;
-    rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr pub_imgUniform;
-    rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr pub_imgCartesian;
+    rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr pub_imgUniformRaw;
+    image_transport::Publisher pub_img;
+    image_transport::Publisher pub_imgUniform;
+    image_transport::Publisher pub_imgCartesian;
+
     rclcpp::Publisher<sensor_msgs::msg::FluidPressure>::SharedPtr pub_pressure;
     rclcpp::Publisher<sensor_msgs::msg::Temperature>::SharedPtr pub_temperature;
     rclcpp::Publisher<geometry_msgs::msg::Vector3Stamped>::SharedPtr pub_orientation;
