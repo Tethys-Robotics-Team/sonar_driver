@@ -236,14 +236,12 @@ void OculusSonar::invokeCallbacks(){
         // Check which message type was received
         switch (omh->msgId){
             case OculusMessages::OculusMessageType::messageSimplePingResult:
-                printf("OculusSonar: Received simple ping result message\n");
                 processSimplePingResult((OculusMessages::OculusSimplePingResult *)omh);
                 break;
             case OculusMessages::OculusMessageType::messageUserConfig:
                 printf("OculusSonar: Received user config message\n");
                 break;
             case OculusMessages::OculusMessageType::messageDummy:
-                printf("OculusSonar: Received dummy message\n");
                 break;
             default:
                 printf("OculusSonar: Received unknown message\n");
@@ -320,15 +318,12 @@ void OculusSonar::processSimplePingResult(OculusMessages::OculusSimplePingResult
         lastImage->height = ranges;
         lastImage->width  = beams;
 
-        printf("OculusSonar: Copy image\n");
         cv::Mat image = cv::Mat(ranges, beams, CV_8U);
         std::memcpy(image.data, startAddress + imageOffset, imageSize);
         cvBridgeShared_->image = image;     // This is a shallow copy dont worry. image can go out of scope.
         cvBridgeShared_->encoding = "mono8";
 
         
-        printf("OculusSonar: Copied image\n");
-
         // New image ready, notify all callbacks
         SonarCallback cb;
         std::lock_guard<std::mutex> lock(callbackMutex);

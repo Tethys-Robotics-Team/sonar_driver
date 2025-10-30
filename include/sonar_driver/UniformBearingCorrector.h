@@ -14,7 +14,7 @@ struct UniformBearingCorrectorConfig{
                                   rows(rows), cols(cols), minRange(minRange), maxRange(maxRange), angularResolution(angularResolution){
         this->fov = cols * angularResolution;
         this->rangeResolution = (maxRange - minRange) / (double)rows;
-        spdlog::info("UniformBearingCorrectorConfig: Size {}/{}, Range: {}/{}, Resolution: {}/{}, FOV: {}", rows, cols, minRange, maxRange, rangeResolution, angularResolution, fov);
+	// spdlog::info("UniformBearingCorrectorConfig: Size {}/{}, Range: {}/{}, Resolution: {}/{}, FOV: {}", rows, cols, minRange, maxRange, rangeResolution, angularResolution, fov);
     }
 
     void setBearings(const std::vector<int16_t>& bearings){
