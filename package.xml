@@ -19,6 +19,8 @@
   <depend>geometry_msgs</depend>
   <depend>sonar_driver_interface</depend>
   <depend>image_transport</depend>
+  <depend>cv_bridge</depend>
+  <depend>libopencv-dev</depend>
   <exec_depend>ros2launch</exec_depend>
 
   <export>
