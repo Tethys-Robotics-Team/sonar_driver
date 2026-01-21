@@ -1,26 +1,23 @@
 
 #include <sonar_driver/OculusDriverNode.h>
 
-
+/// @brief Constructor for OculusDriverNode
+/// @param nodeName Name of the ROS2 node
 OculusDriverNode::OculusDriverNode(const std::string& nodeName) : rclcpp::Node(nodeName){
 
-    // Initialize publishers
     pub_imgUniformRaw = this->create_publisher<sensor_msgs::msg::Image>("image_uniform_raw", 10);
 
     this->declare_parameter<std::string>("image_transport", "compressed");
-
-
     pub_img = image_transport::create_publisher(this, "image");
     pub_imgUniform = image_transport::create_publisher(this, "image_uniform");
     pub_imgCartesian = image_transport::create_publisher(this, "image_cartesian");
 
-    pub_pressure = this->create_publisher<sensor_msgs::msg::FluidPressure>("pressure", 10);
+    pub_depth = this->create_publisher<geometry_msgs::msg::PointStamped>("depth", 10);
     pub_temperature = this->create_publisher<sensor_msgs::msg::Temperature>("temperature", 10);
     pub_orientation = this->create_publisher<geometry_msgs::msg::Vector3Stamped>("orientation", 10);
-    pub_configuration = this->create_publisher<sonar_driver_interface::msg::SonarConfiguration>("configuration", 10);
-    pub_bearings = this->create_publisher<sonar_driver_interface::msg::SonarBearings>("bearings", 10);
+    pub_configuration = this->create_publisher<sonar_driver_interfaces::msg::SonarConfiguration>("configuration", 10);
+    pub_bearings = this->create_publisher<sonar_driver_interfaces::msg::SonarBearings>("bearings", 10);
     
-    // cv_imgShared_ = cv_bridge::CvImage(std_msgs::msg::Header(), sensor_msgs::image_encodings::MONO8, cv::Mat(512, 512, CV_8U));
     sonar_ = std::make_unique<OculusSonar>(cvBridgeShared_);
 
     UniformBearingCorrectorConfig initConfig(0, 0, 0.0, 0.0, 0.0);
@@ -30,18 +27,19 @@ OculusDriverNode::OculusDriverNode(const std::string& nodeName) : rclcpp::Node(n
     cvBridgeUniform_->encoding = "mono8";
     cvBridgeCartesian_->encoding = "mono8";
 
-    sub_reconfiguration = this->create_subscription<sonar_driver_interface::msg::SonarConfigurationChange>(
+    sub_reconfiguration = this->create_subscription<sonar_driver_interfaces::msg::SonarConfigurationChange>(
         "reconfigure", 10, std::bind(&OculusDriverNode::cb_reconfiguration, this, std::placeholders::_1)
     );
 
 }
 
-/// @brief Method to execute upon receival of a simplePingResult in the sonar_ class 
+/// @brief Callback for simple ping result from sonar 
 /// @param image 
 void OculusDriverNode::cb_simplePingResult(std::unique_ptr<SonarImage>& image){
     updateCommonHeader();
 
     double angularResolution = (sonar_->getBearingTable().back() - sonar_->getBearingTable().front()) / (100.0 * image->width);
+    spdlog::debug("back: {}. front: {}. Diff: {}. Angular: {}. Width: {}", sonar_->getBearingTable().back(), sonar_->getBearingTable().front(), (sonar_->getBearingTable().back() - sonar_->getBearingTable().front()), angularResolution, image->width);
     UniformBearingCorrectorConfig currentConfig(image->height, image->width, 
                                                 sonar_->getMinimumRange(), sonar_->getMaximumRange(),
                                                 angularResolution);
@@ -62,38 +60,43 @@ void OculusDriverNode::cb_simplePingResult(std::unique_ptr<SonarImage>& image){
 
 }
 
+/// @brief Update common header with current timestamp
 void OculusDriverNode::updateCommonHeader(){
     commonHeader_.frame_id = "sonar_0";
     commonHeader_.stamp = this->get_clock()->now();
 }
 
+/// @brief Publish raw sonar image
 void OculusDriverNode::publishImage(){
-    // cv_bridge::CvImage bridge(commonHeader_, sensor_msgs::image_encodings::MONO8, std::move(cv_imgShared_));
     auto msg_img = cvBridgeShared_->toImageMsg();
     msg_img->header = commonHeader_;
     this->pub_img.publish(*msg_img);
 }
 
+/// @brief Publish cartesian-corrected sonar image
 void OculusDriverNode::publishCartesianImage(){
-    // cv_bridge::CvImage bridge(commonHeader_, sensor_msgs::image_encodings::MONO8, std::move(cv_imgCartesian_));
     auto msg_cartesian = cvBridgeCartesian_->toImageMsg();
     msg_cartesian->header = commonHeader_;
     this->pub_imgCartesian.publish(*msg_cartesian);
 }
 
+/// @brief Publish uniform-corrected sonar image
 void OculusDriverNode::publishUniformImage(){
-    // cv_bridge::CvImage bridge(commonHeader_, sensor_msgs::image_encodings::MONO8, std::move(cv_imgUniform_));
     auto msg_uniform = cvBridgeUniform_->toImageMsg();
     msg_uniform->header = commonHeader_;
     this->pub_imgUniform.publish(*msg_uniform);
     this->pub_imgUniformRaw->publish(*msg_uniform);
 }
 
+/// @brief Publish additional information from OculusSonarImage
+/// @param image Source image containing sensor data
 void OculusDriverNode::publishAdditionalInformation1(OculusSonarImage &image){
     this->publishPressure(image.pressure);
     this->publishTemperature(image.temperature);
 }
 
+/// @brief Publish additional information from OculusSonarImage2
+/// @param image Source image containing sensor data
 void OculusDriverNode::publishAdditionalInformation2(OculusSonarImage2 &image){
    
     this->publishPressure(image.pressure);
@@ -108,13 +111,19 @@ void OculusDriverNode::publishAdditionalInformation2(OculusSonarImage2 &image){
     this->pub_orientation->publish(msg);
 }
 
+/// @brief Publish depth as PointStamped in ENU frame
+/// @param pressure Pressure value to convert to depth
 void OculusDriverNode::publishPressure(double pressure){
-    sensor_msgs::msg::FluidPressure msg;
+    geometry_msgs::msg::PointStamped msg;
     msg.header = commonHeader_;
-    msg.fluid_pressure = pressure;
-    this->pub_pressure->publish(msg);
+    msg.point.x = 0.0;
+    msg.point.y = 0.0;
+    msg.point.z = -pressure / 10.0;  // Convert pressure to depth (negative)
+    this->pub_depth->publish(msg);
 }
 
+/// @brief Publish temperature measurement
+/// @param temperature Temperature value to publish
 void OculusDriverNode::publishTemperature(double temperature){
     sensor_msgs::msg::Temperature msg;
     msg.header = commonHeader_;
@@ -122,9 +131,9 @@ void OculusDriverNode::publishTemperature(double temperature){
     this->pub_temperature->publish(msg);
 }
 
-
+/// @brief Publish current sonar configuration and bearings
 void OculusDriverNode::publishCurrentConfig(){
-    sonar_driver_interface::msg::SonarConfiguration configuration;
+    sonar_driver_interfaces::msg::SonarConfiguration configuration;
 
     configuration.header = commonHeader_;
 
@@ -155,15 +164,16 @@ void OculusDriverNode::publishCurrentConfig(){
     pub_configuration->publish(configuration);
 
     // Publish the bearing table 
-    sonar_driver_interface::msg::SonarBearings msg_bearings;
+    sonar_driver_interfaces::msg::SonarBearings msg_bearings;
     msg_bearings.header = commonHeader_;
     msg_bearings.bearings = sonar_->getBearingTable();
     this->pub_bearings->publish(msg_bearings);
     
 }
 
-
-void OculusDriverNode::cb_reconfiguration(const sonar_driver_interface::msg::SonarConfigurationChange::SharedPtr msg){
+/// @brief Callback for sonar reconfiguration requests
+/// @param msg Configuration change message
+void OculusDriverNode::cb_reconfiguration(const sonar_driver_interfaces::msg::SonarConfigurationChange::SharedPtr msg){
     sonar_->configure(
         msg->fire_mode,
         msg->range,
@@ -184,13 +194,11 @@ int main(int argc, char **argv){
     
     std::shared_ptr<OculusDriverNode> node = std::make_shared<OculusDriverNode>("OculusDriverNode");
 
-    // Initialize and connect to sonar
     node->sonar_->findAndConnect();            // This starts the thread that will process new images
     if (node->sonar_->getState() != SonarState::Connected){
         exit(EXIT_FAILURE);
     }
 
-    // Configure sonar
     node->sonar_->configure(2, 10.0, 80.0, 0.0, 0.0, true, 255, 0xff);
     node->sonar_->setPingRate(0);
     
@@ -198,7 +206,6 @@ int main(int argc, char **argv){
         node->cb_simplePingResult(image);
     };
 
-    // Register the callback
     node->sonar_->registerCallback(callback);
 
     while (rclcpp::ok()){
