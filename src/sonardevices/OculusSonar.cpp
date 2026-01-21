@@ -236,14 +236,12 @@ void OculusSonar::invokeCallbacks(){
         // Check which message type was received
         switch (omh->msgId){
             case OculusMessages::OculusMessageType::messageSimplePingResult:
-                // printf("OculusSonar: Received simple ping result message\n");
                 processSimplePingResult((OculusMessages::OculusSimplePingResult *)omh);
                 break;
             case OculusMessages::OculusMessageType::messageUserConfig:
                 printf("OculusSonar: Received user config message\n");
                 break;
             case OculusMessages::OculusMessageType::messageDummy:
-                // printf("OculusSonar: Received dummy message\n");
                 break;
             default:
                 printf("OculusSonar: Received unknown message\n");

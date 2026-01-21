@@ -40,10 +40,8 @@ OculusDriverNode::OculusDriverNode(const std::string& nodeName) : rclcpp::Node(n
 /// @param image 
 void OculusDriverNode::cb_simplePingResult(std::unique_ptr<SonarImage>& image){
     updateCommonHeader();
-    // printf("OculusDriverNode: Correcting image\n");
 
     double angularResolution = (sonar_->getBearingTable().back() - sonar_->getBearingTable().front()) / (100.0 * image->width);
-    // spdlog::info("back: {}. front: {}. Diff: {}. Angular: {}. Width: {}", sonar_->getBearingTable().back(), sonar_->getBearingTable().front(), (sonar_->getBearingTable().back() - sonar_->getBearingTable().front()), angularResolution, image->width);
     UniformBearingCorrectorConfig currentConfig(image->height, image->width, 
                                                 sonar_->getMinimumRange(), sonar_->getMaximumRange(),
                                                 angularResolution);
@@ -57,14 +55,9 @@ void OculusDriverNode::cb_simplePingResult(std::unique_ptr<SonarImage>& image){
 
     bearingCorrector_->rectifyImage(cvBridgeShared_->image, cvBridgeUniform_->image, cvBridgeCartesian_->image);
     
-    // printf("OculusDriverNode: Corrected image\n");
-    
     publishImage();
-    // printf("OculusDriverNode: Published image\n");
     publishUniformImage();
-    // printf("OculusDriverNode: Published Uniform\n");
     publishCartesianImage();
-    // printf("OculusDriverNode: Published Cartesian\n");
     publishCurrentConfig();
 
 }
@@ -210,7 +203,6 @@ int main(int argc, char **argv){
 
     while (rclcpp::ok()){
         rclcpp::spin_some(node);
-        // printf("OculusDriverNode: Firing\n");
         node->sonar_->fire();
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }

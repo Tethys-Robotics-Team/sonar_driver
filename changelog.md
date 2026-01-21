@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.1] - 2025-10-30
+
+### Fixed
+- Removed print statements for debuging
+
 ## [1.0.0] - 2024-10-15
 
 ### Added
