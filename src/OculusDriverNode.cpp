@@ -118,7 +118,7 @@ void OculusDriverNode::publishPressure(double pressure){
     msg.header = commonHeader_;
     msg.point.x = 0.0;
     msg.point.y = 0.0;
-    msg.point.z = -pressure / 10.0;  // Convert pressure to depth (negative)
+    msg.point.z = -pressure * 0.098;  // Convert pressure to depth (negative)
     this->pub_depth->publish(msg);
 }
 
