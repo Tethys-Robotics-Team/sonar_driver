@@ -323,7 +323,6 @@ void OculusSonar::processSimplePingResult(OculusMessages::OculusSimplePingResult
         cvBridgeShared_->image = image;     // This is a shallow copy dont worry. image can go out of scope.
         cvBridgeShared_->encoding = "mono8";
 
-        
         // New image ready, notify all callbacks
         SonarCallback cb;
         std::lock_guard<std::mutex> lock(callbackMutex);

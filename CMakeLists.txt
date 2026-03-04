@@ -16,9 +16,11 @@ find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
-find_package(sonar_driver_interface REQUIRED)
+find_package(sonar_driver_interfaces REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(cv_bridge REQUIRED)
+find_package(image_transport REQUIRED)
+
 
 include_directories(
   include
@@ -51,8 +53,9 @@ target_link_libraries(sonardevices ezsocket)
 target_include_directories(sonardevices PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
-  ament_target_dependencies(sonardevices
-  sensor_msgs)
+ament_target_dependencies(sonardevices
+  sensor_msgs
+  cv_bridge)
 
 # ===================================================================== Node
 add_executable(OculusDriverNode src/OculusDriverNode.cpp)
@@ -60,6 +63,7 @@ target_link_libraries(OculusDriverNode
     ${OpenCV_LIBRARIES}
     ${cv_bridge_LIBRARIES}
     ${rclcpp_LIBRARIES}
+    fmt
 )
 target_link_libraries(OculusDriverNode ezsocket sonardevices)
 ament_target_dependencies(OculusDriverNode 
@@ -67,7 +71,8 @@ ament_target_dependencies(OculusDriverNode
   std_msgs
   sensor_msgs
   geometry_msgs
-  sonar_driver_interface
+  sonar_driver_interfaces
+  image_transport
 )
 target_include_directories(OculusDriverNode PUBLIC
   include/sonar_driver
@@ -78,26 +83,6 @@ install(TARGETS OculusDriverNode
   EXPORT export_${PROJECT_NAME}
   DESTINATION lib/${PROJECT_NAME})
 
-
-
-
-# add_executable(BridgeTest src/BridgeTest.cpp)
-# target_link_libraries(BridgeTest
-#     ${OpenCV_LIBRARIES}
-#     ${cv_bridge_LIBRARIES}
-#     ${rclcpp_LIBRARIES}
-# )
-# 
-# ament_target_dependencies(BridgeTest 
-#   rclcpp
-#   std_msgs
-#   sensor_msgs
-#   geometry_msgs
-#   sonar_driver_interface
-# )
-# install(TARGETS BridgeTest
-#   EXPORT export_${PROJECT_NAME}
-#   DESTINATION lib/${PROJECT_NAME})
 
 
   if(BUILD_TESTING)
