@@ -41,7 +41,7 @@ public:
     rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr pub_img;
     rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr pub_imgUniform;
     rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr pub_imgCartesian;
-    rclcpp::Publisher<sensor_msgs::msg::FluidPressure>::SharedPtr pub_pressure;
+    rclcpp::Publisher<geometry_msgs::msg::PointStamped>::SharedPtr pub_depth;
     rclcpp::Publisher<sensor_msgs::msg::Temperature>::SharedPtr pub_temperature;
     rclcpp::Publisher<geometry_msgs::msg::Vector3Stamped>::SharedPtr pub_orientation;
     rclcpp::Publisher<sonar_driver_interfaces::msg::SonarConfiguration>::SharedPtr pub_configuration;
