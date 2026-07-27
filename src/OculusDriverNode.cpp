@@ -6,12 +6,9 @@
 OculusDriverNode::OculusDriverNode(const std::string& nodeName) : rclcpp::Node(nodeName){
 
     pub_imgUniformRaw = this->create_publisher<sensor_msgs::msg::Image>("image_uniform_raw", 10);
-
-    this->declare_parameter<std::string>("image_transport", "compressed");
-    pub_img = image_transport::create_publisher(this, "image");
-    pub_imgUniform = image_transport::create_publisher(this, "image_uniform");
-    pub_imgCartesian = image_transport::create_publisher(this, "image_cartesian");
-
+    pub_img = this->create_publisher<sensor_msgs::msg::Image>("image", 10);
+    pub_imgUniform = this->create_publisher<sensor_msgs::msg::Image>("image_uniform", 10);
+    pub_imgCartesian = this->create_publisher<sensor_msgs::msg::Image>("image_cartesian", 10);
     pub_depth = this->create_publisher<geometry_msgs::msg::PointStamped>("depth", 10);
     pub_temperature = this->create_publisher<sensor_msgs::msg::Temperature>("temperature", 10);
     pub_orientation = this->create_publisher<geometry_msgs::msg::Vector3Stamped>("orientation", 10);
@@ -70,21 +67,21 @@ void OculusDriverNode::updateCommonHeader(){
 void OculusDriverNode::publishImage(){
     auto msg_img = cvBridgeShared_->toImageMsg();
     msg_img->header = commonHeader_;
-    this->pub_img.publish(*msg_img);
+    this->pub_img->publish(*msg_img);
 }
 
 /// @brief Publish cartesian-corrected sonar image
 void OculusDriverNode::publishCartesianImage(){
     auto msg_cartesian = cvBridgeCartesian_->toImageMsg();
     msg_cartesian->header = commonHeader_;
-    this->pub_imgCartesian.publish(*msg_cartesian);
+    this->pub_imgCartesian->publish(*msg_cartesian);
 }
 
 /// @brief Publish uniform-corrected sonar image
 void OculusDriverNode::publishUniformImage(){
     auto msg_uniform = cvBridgeUniform_->toImageMsg();
     msg_uniform->header = commonHeader_;
-    this->pub_imgUniform.publish(*msg_uniform);
+    this->pub_imgUniform->publish(*msg_uniform);
     this->pub_imgUniformRaw->publish(*msg_uniform);
 }
 

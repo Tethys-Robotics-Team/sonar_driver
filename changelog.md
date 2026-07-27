@@ -1,9 +1,15 @@
 # Changelog
 
+## [1.0.2] - 2026-07-27
+
+### Fixed
+- Removed double publishing of sonar message
+- Potential overflow issue that came from comparing message callback's size and uint16_t
+
 ## [1.0.1] - 2025-10-30
 
 ### Fixed
-- Removed print statements for debuging
+- Removed print statements for debugging
 
 ## [1.0.0] - 2024-10-15
 
