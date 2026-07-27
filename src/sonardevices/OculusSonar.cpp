@@ -324,10 +324,8 @@ void OculusSonar::processSimplePingResult(OculusMessages::OculusSimplePingResult
         cvBridgeShared_->encoding = "mono8";
 
         // New image ready, notify all callbacks
-        SonarCallback cb;
         std::lock_guard<std::mutex> lock(callbackMutex);
-        for (uint16_t i = 0; i < callbacks.size(); i++){
-            cb = callbacks.at(i);
+        for (const SonarCallback& cb : callbacks){
             cb(lastImage);
         }
     }

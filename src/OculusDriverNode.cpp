@@ -9,7 +9,7 @@ OculusDriverNode::OculusDriverNode(const std::string& nodeName) : rclcpp::Node(n
     pub_img = this->create_publisher<sensor_msgs::msg::Image>("image", 10);
     pub_imgUniform = this->create_publisher<sensor_msgs::msg::Image>("image_uniform", 10);
     pub_imgCartesian = this->create_publisher<sensor_msgs::msg::Image>("image_cartesian", 10);
-    pub_pressure = this->create_publisher<sensor_msgs::msg::FluidPressure>("pressure", 10);
+    pub_depth = this->create_publisher<geometry_msgs::msg::PointStamped>("depth", 10);
     pub_temperature = this->create_publisher<sensor_msgs::msg::Temperature>("temperature", 10);
     pub_orientation = this->create_publisher<geometry_msgs::msg::Vector3Stamped>("orientation", 10);
     pub_configuration = this->create_publisher<sonar_driver_interfaces::msg::SonarConfiguration>("configuration", 10);
