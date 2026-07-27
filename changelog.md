@@ -4,7 +4,7 @@
 
 ### Fixed
 - Removed double publishing of sonar message
-- Potential overflow issue that came from compariing message callback's size and uint_t
+- Potential overflow issue that came from comparing message callback's size and uint16_t
 
 ## [1.0.1] - 2025-10-30
 
