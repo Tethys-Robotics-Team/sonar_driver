@@ -47,7 +47,6 @@ add_library(sonardevices
   src/sonardevices/OculusMessages.cpp
   src/sonardevices/OculusSonarImage.cpp
   src/sonardevices/SonarImage.cpp
-  src/UniformBearingCorrector.cpp
 )
 target_link_libraries(sonardevices ezsocket)
 target_include_directories(sonardevices PUBLIC
