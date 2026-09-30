@@ -5,10 +5,7 @@
 /// @param nodeName Name of the ROS2 node
 OculusDriverNode::OculusDriverNode(const std::string& nodeName) : rclcpp::Node(nodeName){
 
-    pub_imgUniformRaw = this->create_publisher<sensor_msgs::msg::Image>("image_uniform_raw", 10);
     pub_img = this->create_publisher<sensor_msgs::msg::Image>("image", 10);
-    pub_imgUniform = this->create_publisher<sensor_msgs::msg::Image>("image_uniform", 10);
-    pub_imgCartesian = this->create_publisher<sensor_msgs::msg::Image>("image_cartesian", 10);
     pub_depth = this->create_publisher<geometry_msgs::msg::PointStamped>("depth", 10);
     pub_temperature = this->create_publisher<sensor_msgs::msg::Temperature>("temperature", 10);
     pub_orientation = this->create_publisher<geometry_msgs::msg::Vector3Stamped>("orientation", 10);
@@ -17,12 +14,7 @@ OculusDriverNode::OculusDriverNode(const std::string& nodeName) : rclcpp::Node(n
     
     sonar_ = std::make_unique<OculusSonar>(cvBridgeShared_);
 
-    UniformBearingCorrectorConfig initConfig(0, 0, 0.0, 0.0, 0.0);
-    bearingCorrector_ = std::make_shared<UniformBearingCorrector>(initConfig);
-
     updateCommonHeader();
-    cvBridgeUniform_->encoding = "mono8";
-    cvBridgeCartesian_->encoding = "mono8";
 
     sub_reconfiguration = this->create_subscription<sonar_driver_interfaces::msg::SonarConfigurationChange>(
         "reconfigure", 10, std::bind(&OculusDriverNode::cb_reconfiguration, this, std::placeholders::_1)
@@ -33,28 +25,9 @@ OculusDriverNode::OculusDriverNode(const std::string& nodeName) : rclcpp::Node(n
 /// @brief Callback for simple ping result from sonar 
 /// @param image 
 void OculusDriverNode::cb_simplePingResult(std::unique_ptr<SonarImage>& image){
-    updateCommonHeader();
-
-    double angularResolution = (sonar_->getBearingTable().back() - sonar_->getBearingTable().front()) / (100.0 * image->width);
-    spdlog::debug("back: {}. front: {}. Diff: {}. Angular: {}. Width: {}", sonar_->getBearingTable().back(), sonar_->getBearingTable().front(), (sonar_->getBearingTable().back() - sonar_->getBearingTable().front()), angularResolution, image->width);
-    UniformBearingCorrectorConfig currentConfig(image->height, image->width, 
-                                                sonar_->getMinimumRange(), sonar_->getMaximumRange(),
-                                                angularResolution);
-
-    if(!bearingCorrector_->hasSameConfig(currentConfig)){
-        spdlog::info("Changed config: back: {}. front: {}. Diff: {}. Angular: {}. Width: {}", sonar_->getBearingTable().back(), sonar_->getBearingTable().front(), (sonar_->getBearingTable().back() - sonar_->getBearingTable().front()), angularResolution, image->width);
-        currentConfig.setBearings(sonar_->getBearingTable());
-        bearingCorrector_ = std::make_shared<UniformBearingCorrector>(currentConfig);
-    }
-
-
-    bearingCorrector_->rectifyImage(cvBridgeShared_->image, cvBridgeUniform_->image, cvBridgeCartesian_->image);
-    
+    updateCommonHeader();  
     publishImage();
-    publishUniformImage();
-    publishCartesianImage();
     publishCurrentConfig();
-
 }
 
 /// @brief Update common header with current timestamp
@@ -68,21 +41,6 @@ void OculusDriverNode::publishImage(){
     auto msg_img = cvBridgeShared_->toImageMsg();
     msg_img->header = commonHeader_;
     this->pub_img->publish(*msg_img);
-}
-
-/// @brief Publish cartesian-corrected sonar image
-void OculusDriverNode::publishCartesianImage(){
-    auto msg_cartesian = cvBridgeCartesian_->toImageMsg();
-    msg_cartesian->header = commonHeader_;
-    this->pub_imgCartesian->publish(*msg_cartesian);
-}
-
-/// @brief Publish uniform-corrected sonar image
-void OculusDriverNode::publishUniformImage(){
-    auto msg_uniform = cvBridgeUniform_->toImageMsg();
-    msg_uniform->header = commonHeader_;
-    this->pub_imgUniform->publish(*msg_uniform);
-    this->pub_imgUniformRaw->publish(*msg_uniform);
 }
 
 /// @brief Publish additional information from OculusSonarImage
