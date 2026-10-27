@@ -4,8 +4,9 @@
 #include <sonar_driver/sonardevices/Sonar.h>
 #include <sonar_driver/sonardevices/OculusSonarImage.h>
 
-#include <memory.h>
-#include <string.h>
+#include <memory>
+#include <vector>
+#include <string>
 
 
 #define SONAR_READ_BUFFER_SIZE 200000

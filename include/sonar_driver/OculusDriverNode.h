@@ -27,7 +27,6 @@
 
 #include <sonar_driver/sonardevices/Sonar.h>
 #include <sonar_driver/sonardevices/OculusSonar.h>
-#include <sonar_driver/UniformBearingCorrector.h>
 
 class OculusDriverNode : public rclcpp::Node
 {
@@ -36,11 +35,7 @@ public:
     
     std::unique_ptr<OculusSonar> sonar_;
 
-
-    rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr pub_imgUniformRaw;
     rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr pub_img;
-    rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr pub_imgUniform;
-    rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr pub_imgCartesian;
     rclcpp::Publisher<geometry_msgs::msg::PointStamped>::SharedPtr pub_depth;
     rclcpp::Publisher<sensor_msgs::msg::Temperature>::SharedPtr pub_temperature;
     rclcpp::Publisher<geometry_msgs::msg::Vector3Stamped>::SharedPtr pub_orientation;
@@ -58,8 +53,6 @@ protected:
     void updateCommonHeader();
 
     void publishImage();
-    void publishUniformImage();
-    void publishCartesianImage();
     void publishCurrentConfig();
 
     void publishAdditionalInformation1(OculusSonarImage &image);
@@ -69,19 +62,11 @@ protected:
 
     void cb_reconfiguration(const sonar_driver_interfaces::msg::SonarConfigurationChange::SharedPtr msg);
 
-    std::shared_ptr<UniformBearingCorrector> bearingCorrector_;
-
     std_msgs::msg::Header commonHeader_;
     sensor_msgs::msg::Image msg_image_;
-    sensor_msgs::msg::Image msg_imgUniform_;
-    sensor_msgs::msg::Image msg_imgCartesian_;
     
     std::shared_ptr<cv_bridge::CvImage> cvBridgeShared_ = std::make_shared<cv_bridge::CvImage>();
-    std::shared_ptr<cv_bridge::CvImage> cvBridgeUniform_ = std::make_shared<cv_bridge::CvImage>();
-    std::shared_ptr<cv_bridge::CvImage> cvBridgeCartesian_ = std::make_shared<cv_bridge::CvImage>();
 
     cv::Mat cv_imgShared_ = cv::Mat(512, 512, CV_8U);
-    cv::Mat cv_imgUniform_ = cv::Mat(512, 512, CV_8U);
-    cv::Mat cv_imgCartesian_ = cv::Mat(512, 512, CV_8U);
 };
 
